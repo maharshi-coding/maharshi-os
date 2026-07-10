@@ -1,0 +1,364 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================================================
+   PROJECT VICE // MAHARSHI.EXE — Vice City / Miami-sunset theme tokens
+   Neon night by default. Cheat "DAYLIGHT" flips to a hot midday alternate.
+=========================================================================== */
+:root {
+  --font-display: "Anton";
+  --font-grotesk: "Space Grotesk";
+  --font-mono: "JetBrains Mono";
+
+  /* Core surfaces */
+  --bg: #0a0512;
+  --bg-2: #12071f;
+  --panel: rgba(255, 255, 255, 0.035);
+  --panel-strong: rgba(255, 255, 255, 0.07);
+  --line: rgba(255, 120, 200, 0.16);
+  --fg: #fdf0ff;
+  --muted: #c4bdd6;
+
+  /* Neon accents */
+  --pink: #ff2e97;
+  --cyan: #05d9e8;
+  --gold: #ffb03a;
+  --purple: #7b2ff7;
+  --green: #39ff88;
+
+  /* RGB channels — power Tailwind's /opacity modifier (text-fg/80, bg-night/70…).
+     Hex `var()` colours can't take an alpha channel, so these are required. */
+  --bg-rgb: 10 5 18;
+  --fg-rgb: 253 240 255;
+  --muted-rgb: 196 189 214;
+  --pink-rgb: 255 46 151;
+  --cyan-rgb: 5 217 232;
+  --gold-rgb: 255 176 58;
+  --purple-rgb: 123 47 247;
+  --green-rgb: 57 255 136;
+
+  /* Accent aliases (kept so shared utilities stay generic) */
+  --accent: var(--pink);
+  --accent-2: var(--cyan);
+  --accent-dim: rgba(255, 46, 151, 0.14);
+  --glow: rgba(255, 46, 151, 0.5);
+  --selection: rgba(255, 46, 151, 0.3);
+
+  /* Sunset gradient used for skies, dividers, logos */
+  --sunset: linear-gradient(
+    180deg,
+    #2a0a4a 0%,
+    #7b2ff7 26%,
+    #ff2e97 55%,
+    #ff6b3d 78%,
+    #ffb03a 100%
+  );
+  --sunset-h: linear-gradient(90deg, #ff9e2c, #ff2e97 45%, #7b2ff7 75%, #05d9e8);
+}
+
+/* DAYLIGHT cheat — hot Vice City midday.
+   Accents are darkened here so labels stay AA-legible on the light bg
+   (the neon night accents drop to ~1.3:1 on peach). */
+html.daylight {
+  --bg: #ffd7a8;
+  --bg-2: #ffb98a;
+  --panel: rgba(20, 5, 30, 0.05);
+  --panel-strong: rgba(20, 5, 30, 0.09);
+  --line: rgba(123, 47, 247, 0.28);
+  --fg: #1a0630;
+  --muted: #6a3d7a;
+
+  --pink: #b8005a;
+  --cyan: #045463;
+  --gold: #7d4600;
+  --purple: #6321c0;
+  --green: #0b6330;
+
+  --bg-rgb: 255 215 168;
+  --fg-rgb: 26 6 48;
+  --muted-rgb: 106 61 122;
+  --pink-rgb: 184 0 90;
+  --cyan-rgb: 4 84 99;
+  --gold-rgb: 125 70 0;
+  --purple-rgb: 99 33 192;
+  --green-rgb: 11 99 48;
+
+  --accent: var(--pink);
+  --accent-2: var(--cyan);
+  --accent-dim: rgba(184, 0, 90, 0.14);
+  --glow: rgba(123, 47, 247, 0.35);
+  --selection: rgba(123, 47, 247, 0.25);
+  --sunset: linear-gradient(180deg, #05d9e8 0%, #7dd0ff 40%, #ffd7a8 100%);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  background:
+    radial-gradient(1200px 800px at 80% -10%, rgba(123, 47, 247, 0.22), transparent 60%),
+    radial-gradient(1000px 700px at 0% 110%, rgba(5, 217, 232, 0.14), transparent 55%),
+    var(--bg);
+  color: var(--fg);
+  font-family: var(--font-grotesk), sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--fg);
+}
+
+/* Neon scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--pink), var(--purple));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--cyan), var(--pink));
+}
+
+/* Hide native cursor only when the custom reticle is active (fine pointers) */
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor,
+  html.custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Type helpers
+-------------------------------------------------------------------------- */
+.font-display {
+  font-family: var(--font-display), var(--font-grotesk), sans-serif;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* Neon glow text */
+.neon {
+  text-shadow:
+    0 0 6px var(--glow),
+    0 0 22px var(--glow);
+}
+.neon-cyan {
+  color: var(--cyan);
+  text-shadow: 0 0 6px rgba(5, 217, 232, 0.6), 0 0 22px rgba(5, 217, 232, 0.4);
+}
+.neon-gold {
+  color: var(--gold);
+  text-shadow: 0 0 6px rgba(255, 176, 58, 0.6), 0 0 22px rgba(255, 176, 58, 0.35);
+}
+
+/* Sunset-filled headline text */
+.text-sunset {
+  background: var(--sunset-h);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Surfaces
+-------------------------------------------------------------------------- */
+.glass {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.015)
+  );
+  border: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+.neon-border {
+  border: 1px solid var(--line);
+  box-shadow:
+    0 0 0 1px rgba(255, 46, 151, 0.06),
+    0 0 24px -12px var(--glow),
+    inset 0 0 24px -18px var(--glow);
+}
+.neon-ring:hover {
+  box-shadow: 0 0 40px -10px var(--glow);
+  border-color: var(--pink);
+}
+
+/* --------------------------------------------------------------------------
+   Backgrounds & FX
+-------------------------------------------------------------------------- */
+
+/* Retro synthwave grid floor */
+.grid-floor {
+  background-image:
+    linear-gradient(rgba(255, 46, 151, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(5, 217, 232, 0.25) 1px, transparent 1px);
+  background-size: 44px 44px;
+  transform: perspective(340px) rotateX(62deg);
+  transform-origin: top center;
+  mask-image: linear-gradient(to bottom, transparent, black 40%, black 70%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 70%, transparent);
+}
+
+/* Flat neon grid used behind sections */
+.grid-bg {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 78%);
+}
+
+/* VHS scanlines over the whole app — pure CSS */
+.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    transparent 4px
+  );
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+.scanlines::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 61;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* Ambient pointer-following glow */
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    520px circle at var(--glow-x, 50%) var(--glow-y, 30%),
+    rgba(255, 46, 151, 0.16),
+    transparent 62%
+  );
+  transition: opacity 0.6s ease;
+}
+
+/* Blinking terminal caret */
+.caret::after {
+  content: "▋";
+  color: var(--cyan);
+  animation: blink 1.1s step-end infinite;
+  margin-left: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes
+-------------------------------------------------------------------------- */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 6px var(--glow), 0 0 22px var(--glow);
+  }
+  20%, 22%, 24%, 55% {
+    opacity: 0.45;
+    text-shadow: none;
+  }
+}
+.flicker { animation: flicker 4.5s infinite; }
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Minimap radar sweep (used inline, so define the keyframe explicitly) */
+@keyframes radar-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 22s linear infinite;
+}
+
+/* WASTED slow-mo desaturate (404 + cheat) */
+@keyframes wasted {
+  0% { filter: grayscale(0) contrast(1); transform: scale(1); }
+  100% { filter: grayscale(0.85) contrast(1.25) brightness(0.6); transform: scale(1.03); }
+}
+.wasted { animation: wasted 1.2s ease forwards; }
+
+/* Star-rain cheat particle */
+@keyframes star-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   A11y
+-------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--pink);
+  color: #0a0512;
+  font-weight: 700;
+  border-radius: 6px;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 16px;
+}
+
+/* Reduced motion: kill decorative animation globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scanlines::before { display: none; }
+}
