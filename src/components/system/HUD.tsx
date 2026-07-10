@@ -31,6 +31,12 @@ export function HUD() {
   const [levelUp, setLevelUp] = useState(false);
   const prevLevel = useRef(level);
 
+  // Show the right modifier key per platform (⌘ on macOS, Ctrl elsewhere).
+  const [isMac, setIsMac] = useState(false);
+  useEffect(() => {
+    setIsMac(/Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent));
+  }, []);
+
   // Track the section in view → drives location, minimap and progression.
   useEffect(() => {
     if (!loaded) return;
@@ -118,10 +124,10 @@ export function HUD() {
             sfx.play("click");
             setPaletteOpen(true);
           }}
-          className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-line bg-night/70 px-3 py-1.5 font-mono text-[11px] text-muted backdrop-blur-md transition-colors hover:border-cyan hover:text-cyan"
-          aria-label="Open quick travel and cheats (Ctrl+K)"
+          className="pointer-events-auto flex items-center gap-1 rounded-full border border-line bg-night/70 px-3 py-1.5 font-mono text-[11px] text-muted backdrop-blur-md transition-colors hover:border-cyan hover:text-cyan"
+          aria-label={`Open quick travel and cheats (${isMac ? "Command" : "Ctrl"}+K)`}
         >
-          <Command size={12} /> K
+          {isMac ? <Command size={12} aria-hidden="true" /> : "Ctrl"} K
         </button>
       </div>
 
