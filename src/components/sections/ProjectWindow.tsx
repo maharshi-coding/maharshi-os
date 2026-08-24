@@ -247,7 +247,7 @@ export function ProjectWindow({ project, index }: { project: Project; index: num
                   onClick={() => sfx.play("click")}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-neon/60 bg-neon/10 px-3 py-2 font-mono text-xs uppercase tracking-widest text-neon transition-colors duration-200 hover:bg-neon/20"
                 >
-                  <ExternalLink size={13} aria-hidden="true" /> Live Demo
+                  <ExternalLink size={13} aria-hidden="true" /> {project.liveLabel ?? "Live Demo"}
                 </a>
               )}
               {repoUrl && (

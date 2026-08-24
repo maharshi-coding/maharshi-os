@@ -115,6 +115,7 @@ export interface Project {
   nodes: string[];
   github: string;
   live?: string; // public, click-to-test deployment (only where one actually exists)
+  liveLabel?: string; // button text for `live` (defaults to "Live Demo"; e.g. "Walkthrough")
 }
 
 export const projects: Project[] = [
@@ -246,6 +247,8 @@ export const projects: Project[] = [
       "DataHub (re-read to verify)",
     ],
     github: "https://github.com/maharshi-coding/datahub-steward-squad",
+    live: "https://maharshi-coding.github.io/datahub-steward-squad/",
+    liveLabel: "Walkthrough",
   },
   {
     id: "overturn",
