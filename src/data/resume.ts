@@ -68,7 +68,7 @@ export const experience: ExperienceEntry[] = [
     location: "—",
     level: "EXEC",
     logs: [
-      "Built and shipped multiple AI-powered apps and autonomous agents end-to-end — a five-agent DataHub metadata-governance system (DataHub Steward Squad), an autonomous insurance-appeal agent (Overturn), an AI Tutor mobile app (React Native + OpenAI APIs), and a fully automated tech-news pipeline (text-to-speech, video rendering).",
+      "Built and shipped multiple AI-powered apps and autonomous agents end-to-end — a four-agent Amazon-seller-protection system on AWS Bedrock (Seller Shield), a five-agent DataHub metadata-governance system (DataHub Steward Squad), an autonomous insurance-appeal agent (Overturn), and an AI Tutor mobile app (React Native + OpenAI APIs).",
       "Integrated LLMs via REST APIs with prompt engineering and iterative evaluation to improve output quality and reliability.",
       "Demonstrated projects to non-technical users, gathered feedback, and maintained documentation for long-term handoff.",
     ],
@@ -114,6 +114,7 @@ export interface Project {
   architecture: { from: string; to: string }[];
   nodes: string[];
   github: string;
+  live?: string; // public, click-to-test deployment (only where one actually exists)
 }
 
 export const projects: Project[] = [
@@ -244,7 +245,7 @@ export const projects: Project[] = [
       "Approval-gated writeback",
       "DataHub (re-read to verify)",
     ],
-    github: "https://github.com/maharshi-coding",
+    github: "https://github.com/maharshi-coding/datahub-steward-squad",
   },
   {
     id: "overturn",
@@ -289,7 +290,54 @@ export const projects: Project[] = [
       "Firestore Memory Bank",
       "Background follow-up loop",
     ],
-    github: "https://github.com/maharshi-coding",
+    github: "https://github.com/maharshi-coding/overturn",
+  },
+  {
+    id: "seller-shield",
+    name: "Seller Shield",
+    binary: "seller-shield.aws",
+    kind: "AI Agents · AWS",
+    featured: true,
+    summary:
+      "A four-agent AI team that protects small Amazon sellers — it watches account health in real time, catches suspension and return-fraud risk before it lands, and auto-drafts the evidence-backed appeal or SAFE-T reimbursement claim, citing the exact policy clause.",
+    stack: [
+      "Python",
+      "Strands Agents SDK",
+      "Amazon Bedrock",
+      "Bedrock Knowledge Base",
+      "FastAPI",
+      "React",
+      "AWS",
+    ],
+    features: [
+      "Four specialist agents — Monitor, Evidence, Drafting, Escalation — composed as tools under one orchestrator (Agents-as-Tools)",
+      "Detects suspension risk, ODR/OTDR drift and single-buyer return-fraud spikes, then routes to an advisory or a drafted claim",
+      "Bedrock Knowledge Base RAG retrieves the correct Amazon policy clause so every appeal cites real policy, never hallucinated text",
+      "Each agent has a deterministic, unit-tested core (138 passing tests) that runs with zero credentials — deployed as a keyless live demo",
+    ],
+    challenge:
+      "Amazon's enforcement is near-instant and automated — listings are suppressed within minutes — while return fraud has climbed to ~14% of returns, and small sellers have no compliance team to react in time or fight back with the right evidence.",
+    approach:
+      "Four Strands agents on Amazon Bedrock, each split into a deterministic core (detect → evidence → draft → escalate) plus LLM narration; an orchestrator chains them by event, and a Bedrock Knowledge Base grounds every policy citation.",
+    impact:
+      "Not just policy explanation — it does the paperwork: an evidence-backed appeal or reimbursement claim, drafted automatically, for an underserved B2B audience. The full pipeline is deterministic, tested, and live end-to-end.",
+    architecture: [
+      { from: "Seller account-health feed", to: "Monitor agent" },
+      { from: "Monitor agent", to: "RiskEvent" },
+      { from: "RiskEvent", to: "Evidence agent (Bedrock KB RAG)" },
+      { from: "Evidence agent (Bedrock KB RAG)", to: "Drafting agent" },
+      { from: "Drafting agent", to: "Escalation agent" },
+    ],
+    nodes: [
+      "Seller account-health feed",
+      "Monitor agent",
+      "RiskEvent",
+      "Evidence agent (Bedrock KB RAG)",
+      "Drafting agent",
+      "Escalation agent",
+    ],
+    github: "https://github.com/maharshi-coding/seller-shield",
+    live: "https://maharshi-coding.github.io/seller-shield/",
   },
   {
     id: "ai-tutor",
@@ -315,34 +363,6 @@ export const projects: Project[] = [
       { from: "OpenAI API", to: "Tutor responses" },
     ],
     nodes: ["React Native app", "REST API", "OpenAI API", "Tutor responses"],
-    github: "https://github.com/maharshi-coding",
-  },
-  {
-    id: "news-pipeline",
-    name: "Automated Tech News Pipeline",
-    binary: "newsgen.daemon",
-    kind: "AI Automation",
-    featured: false,
-    summary:
-      "A fully automated pipeline that turns tech news into finished videos — text-to-speech narration and video rendering with no human in the loop.",
-    stack: ["Workflow Automation", "Text-to-Speech", "Video Rendering", "Python"],
-    features: [
-      "Fully automated end-to-end content pipeline",
-      "Text-to-speech narration generation",
-      "Automated video rendering and assembly",
-    ],
-    challenge:
-      "Chaining unreliable steps — fetch, narrate, render — into a pipeline that runs without supervision.",
-    approach:
-      "Workflow automation treating each stage as a composable unit, so the pipeline runs hands-free from source text to rendered video.",
-    impact: "Content production that runs itself — a daemon, not a chore.",
-    architecture: [
-      { from: "News source", to: "Processing" },
-      { from: "Processing", to: "Text-to-speech" },
-      { from: "Text-to-speech", to: "Video renderer" },
-      { from: "Video renderer", to: "Published video" },
-    ],
-    nodes: ["News source", "Processing", "Text-to-speech", "Video renderer", "Published video"],
     github: "https://github.com/maharshi-coding",
   },
 ];
@@ -403,11 +423,12 @@ export const skillEdges: [string, string][] = [
   ["React Native", "Campus Ride Pooling"],
   ["React Native", "AI Tutor"],
   ["FastAPI", "Face Recognition Attendance"],
-  ["Python", "Automated Tech News Pipeline"],
+  ["Python", "Seller Shield"],
+  ["FastAPI", "Seller Shield"],
+  ["Agent-Based Systems", "Seller Shield"],
   ["Node.js", "Campus Ride Pooling"],
   ["OpenAI API", "AI Tutor"],
   ["Prompt Engineering", "AI Tutor"],
-  ["Workflow Automation", "Automated Tech News Pipeline"],
   ["Campus Ride Pooling", "Firebase"],
   ["Campus Ride Pooling", "Stripe API"],
   ["Campus Ride Pooling", "Mapbox"],

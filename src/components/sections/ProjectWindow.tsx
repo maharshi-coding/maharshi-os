@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Crosshair, Target } from "lucide-react";
+import { Crosshair, ExternalLink, Github, Target } from "lucide-react";
 import type { Project } from "@/data/resume";
 import { ArchDiagram } from "./ArchDiagram";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,10 @@ function Stars({ n, label }: { n: number; label?: string }) {
 export function ProjectWindow({ project, index }: { project: Project; index: number }) {
   const [tab, setTab] = useState<Tab>("briefing");
   const diff = difficulty(project);
+
+  // Only surface a "Source" link when it points at a real repo (owner/name),
+  // never the bare profile URL used as a placeholder on some projects.
+  const repoUrl = /github\.com\/[^/]+\/.+/.test(project.github) ? project.github : null;
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "briefing", label: "briefing" },
@@ -231,6 +235,34 @@ export function ProjectWindow({ project, index }: { project: Project; index: num
               <span className="text-gold">shipped end-to-end</span>
             </div>
           </div>
+
+          {/* Action links — live demo (where deployed) + source repo. */}
+          {(project.live || repoUrl) && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {project.live && (
+                <a
+                  href={project.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => sfx.play("click")}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-neon/60 bg-neon/10 px-3 py-2 font-mono text-xs uppercase tracking-widest text-neon transition-colors duration-200 hover:bg-neon/20"
+                >
+                  <ExternalLink size={13} aria-hidden="true" /> Live Demo
+                </a>
+              )}
+              {repoUrl && (
+                <a
+                  href={repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => sfx.play("click")}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-panel-strong px-3 py-2 font-mono text-xs uppercase tracking-widest text-fg transition-colors duration-200 hover:border-cyan hover:text-cyan"
+                >
+                  <Github size={13} aria-hidden="true" /> Source
+                </a>
+              )}
+            </div>
+          )}
         </aside>
       </div>
     </motion.article>
