@@ -202,7 +202,7 @@ export const projects: Project[] = [
       "JWT + RBAC",
       "Analytics + export",
     ],
-    github: "https://github.com/maharshi-coding",
+    github: "https://github.com/maharshi-coding/face-attendance-app",
   },
   {
     id: "datahub-steward",
@@ -367,7 +367,7 @@ export const projects: Project[] = [
       { from: "OpenAI API", to: "Tutor responses" },
     ],
     nodes: ["React Native app", "REST API", "OpenAI API", "Tutor responses"],
-    github: "https://github.com/maharshi-coding",
+    github: "https://github.com/maharshi-coding/ai-tutor-app",
   },
 ];
 
