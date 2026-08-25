@@ -164,7 +164,7 @@ export const projects: Project[] = [
       "Stripe Payments + Identity",
       "Mapbox routing",
     ],
-    github: "https://github.com/maharshi-coding",
+    github: "https://github.com/maharshi-coding/ride-share",
   },
   {
     id: "face-attendance",
