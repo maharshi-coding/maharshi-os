@@ -1,7 +1,18 @@
-import { Float, Html, Text, useGLTF } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
+import { handleClick, animateIn, animateOut } from "../utils/Helpers.js";
+import ToggleFocusButton from "../utils/ToggleFocusButton.jsx";
+import { useFrame, useThree } from "@react-three/fiber";
+import DescriptionText3D from "./DescriptionText3D";
+import TitleText3D from "../utils/TitleText3D.jsx";
+import Logo from "../contact/Logo.jsx";
 import gsap from "gsap";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { Environment, Float, MeshPortalMaterial, Text, useGLTF } from "@react-three/drei";
 import { VICE, PROJECT_PALETTE } from "../theme";
 
 /* Scene layout constants. */
@@ -10,111 +21,170 @@ const SR = { x: -0.1177, y: -0.0544, z: -0 };
 const MONITOR = { x: 0, y: -0.28, scale: 0.5 };
 const KBRD = { x: 0, y: -0.3, z: 0.57, scale: 0.0036 };
 const PLNT = { x: -1.19, y: -0.31, z: -0.07, scale: 0.00106 };
-// Screen area on the monitor (monitor-local space).
-const SCREEN = { x: 0, y: 1.45, z: -0.2 };
-
-// Maharshi's real projects.
-const PROJECTS = [
-  {
-    name: "Seller Shield",
-    kind: "AI Agents · AWS",
-    description:
-      "A four-agent AI team on AWS Bedrock that guards Amazon sellers — it detects suspension and return-fraud risk, then auto-drafts an evidence-backed, policy-cited appeal.",
-    tags: ["Python", "Strands", "Bedrock", "FastAPI", "React"],
-    github: "https://github.com/maharshi-coding/seller-shield",
-    live: "https://maharshi-coding.github.io/seller-shield/",
-    liveLabel: "Live Demo",
-  },
-  {
-    name: "DataHub Steward Squad",
-    kind: "AI Agents · Data Governance",
-    description:
-      "Five AI agents read live DataHub metadata over MCP, find governance risks, and write approval-gated fixes back to the catalog — then re-read to prove they landed.",
-    tags: ["Python", "Claude API", "MCP", "Multi-Agent"],
-    github: "https://github.com/maharshi-coding/datahub-steward-squad",
-    live: "https://maharshi-coding.github.io/datahub-steward-squad/",
-    liveLabel: "Walkthrough",
-  },
-  {
-    name: "Overturn",
-    kind: "AI Agents · Autonomous",
-    description:
-      "An autonomous agent that fights wrongful insurance denials — it drafts a clause-cited appeal, files it, and keeps following up in the background for weeks until it's resolved.",
-    tags: ["TypeScript", "Gemini", "Cloud Run", "Firestore"],
-    github: "https://github.com/maharshi-coding/overturn",
-    live: "https://overturn-368045431718.us-central1.run.app",
-    liveLabel: "Live Demo",
-  },
-  {
-    name: "Campus Ride Pooling",
-    kind: "Mobile · Full-Stack",
-    description:
-      "A full-stack campus ride-sharing app with real-time ride creation and chat, Stripe payments and identity verification, and Mapbox route-aware ride matching.",
-    tags: ["React Native", "Firebase", "Stripe", "Mapbox"],
-    github: "https://github.com/maharshi-coding/ride-share",
-    live: "",
-    liveLabel: "Live Demo",
-  },
-  {
-    name: "Face Recognition Attendance",
-    kind: "Computer Vision · Backend",
-    description:
-      "An attendance platform using 128-dimensional face embeddings, blink-based liveness detection to defeat photo spoofing, JWT + role-based access, and CSV / XLSX analytics.",
-    tags: ["Python", "FastAPI", "OpenCV", "JWT"],
-    github: "https://github.com/maharshi-coding/face-attendance-app",
-    live: "",
-    liveLabel: "Live Demo",
-  },
-  {
-    name: "AI Tutor",
-    kind: "Mobile · AI",
-    description:
-      "An AI tutoring mobile app built with React Native and OpenAI APIs, with prompts engineered and iterated specifically for teaching quality.",
-    tags: ["React Native", "OpenAI API", "Prompt Eng."],
-    github: "https://github.com/maharshi-coding/ai-tutor-app",
-    live: "",
-    liveLabel: "Live Demo",
-  },
-];
+const PORTAL = { x: 0, y: 1.45, z: -0.22, scale: 1.89 };
 
 /**
- * Projects scene: a low-poly monitor whose screen shows a clean neon HTML card
- * for each project, with prev/next and link buttons. Reskinned for Vice City.
- * Scene choreography adapted from Eli Parker's MIT-licensed interactive portfolio.
+ * Projects scene: a low-poly monitor whose screen is a portal into the current
+ * project — a recessed neon box with floating 3D title/description, prev/next
+ * arrows, and 3D GitHub/website logos. Adapted faithfully from Eli Parker's
+ * MIT-licensed interactive portfolio, populated with Maharshi Barot's projects.
  */
 const ProjectsScene = forwardRef((_props, ref) => {
   const monitorModel = useGLTF(`/models/computer_monitor_lowpoly/monitor.glb`);
   const teenyBoardModel = useGLTF("/models/teenyBoard/cartoon_mini_keyboard.glb");
   const plantModel = useGLTF("/models/plant/low_poly_style_plant.glb");
+  const { nodes } = useGLTF("/aobox-transformed.glb");
+
+  // Maharshi's real projects (concise copy for the 3D screen).
+  const [projects] = useState([
+    {
+      name: "Seller Shield",
+      description:
+        "Four-agent AI team on AWS Bedrock that guards Amazon sellers: detects suspension and return-fraud risk and auto-drafts evidence-backed, policy-cited appeals.",
+      siteReference: "https://maharshi-coding.github.io/seller-shield/",
+      github: "https://github.com/maharshi-coding/seller-shield",
+    },
+    {
+      name: "DataHub Steward Squad",
+      description:
+        "Five AI agents read live DataHub metadata over MCP, find governance risks, and write approval-gated fixes back to the catalog, verified by re-reading.",
+      siteReference: "https://maharshi-coding.github.io/datahub-steward-squad/",
+      github: "https://github.com/maharshi-coding/datahub-steward-squad",
+    },
+    {
+      name: "Overturn",
+      description:
+        "Autonomous agent that fights wrongful insurance denials: it drafts a clause-cited appeal, files it, and keeps following up in the background for weeks.",
+      siteReference: "https://overturn-368045431718.us-central1.run.app",
+      github: "https://github.com/maharshi-coding/overturn",
+    },
+    {
+      name: "Campus Ride Pooling",
+      description:
+        "Full-stack campus ride-sharing app: real-time ride creation and chat, Stripe payments and identity, and Mapbox route-aware ride matching.",
+      siteReference: "",
+      github: "https://github.com/maharshi-coding/ride-share",
+    },
+    {
+      name: "Face Recognition Attendance",
+      description:
+        "Attendance platform using 128-d face embeddings, blink-based liveness anti-spoofing, JWT + RBAC, and CSV / XLSX analytics.",
+      siteReference: "",
+      github: "https://github.com/maharshi-coding/face-attendance-app",
+    },
+    {
+      name: "AI Tutor",
+      description:
+        "AI tutoring mobile app built with React Native and OpenAI APIs, with prompts tuned specifically for teaching quality.",
+      siteReference: "",
+      github: "https://github.com/maharshi-coding/ai-tutor-app",
+    },
+  ]);
 
   const [isAnimating, setIsAnimating] = useState(false);
-  const [active, setActive] = useState(false); // card mounted only while shown
-  const [index, setIndex] = useState(0);
+  const [portalActive, setPortalActive] = useState(false);
 
   const scene = useRef();
   const { camera } = useThree();
 
-  const project = PROJECTS[index];
-  const color = PROJECT_PALETTE[index % PROJECT_PALETTE.length];
+  const githubLogoRef = useRef();
+  const siteLogoRef = useRef();
 
-  const go = (dir) => {
-    setIndex((i) => (i + dir + PROJECTS.length) % PROJECTS.length);
-  };
+  // Gently bob the link logos
+  useFrame((state) => {
+    if (scene.current && scene.current.visible) {
+      if (githubLogoRef.current) {
+        githubLogoRef.current.position.y =
+          0.01 * Math.sin(state.clock.getElapsedTime() * 1.8) - 0.35;
+      }
+      if (siteLogoRef.current) {
+        siteLogoRef.current.position.y =
+          0.01 * Math.cos(state.clock.getElapsedTime() * 1.75) - 0.35;
+      }
+    }
+  });
 
   useImperativeHandle(ref, () => ({
     scale: scene.current.scale,
     toggleAnimateOut: () =>
       toggleAnimation(scene, camera, isAnimating, setIsAnimating, {
-        onOpenStart: () => setActive(true),
-        onCloseComplete: () => setActive(false),
+        onOpenStart: () => setPortalActive(true),
+        onCloseComplete: () => setPortalActive(false),
       }),
     toggleOut: () => {
       const opening = scene.current.scale.x === 0;
-      if (opening) setActive(true);
+      if (opening) setPortalActive(true);
       ToggleNoAnimation(scene, isAnimating, setIsAnimating);
-      if (!opening) setActive(false);
+      if (!opening) setPortalActive(false);
     },
   }));
+
+  const [projectButtonCooldown, setProjectButtonCooldown] = useState(false);
+
+  async function setProjNum(number) {
+    if (projectButtonCooldown) return;
+    setProjectButtonCooldown(true);
+
+    const max = projects.length;
+    let formattedNumber = number % max;
+    if (formattedNumber === -1) formattedNumber = max - 1;
+
+    setProjectNumber(formattedNumber);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setProjectButtonCooldown(false);
+  }
+
+  const [projectNumber, setProjectNumber] = useState(0);
+  const [projectTitle, setProjTitle] = useState(projects[0].name);
+  const [projectDesc, setProjDesc] = useState(projects[0].description);
+  const [projectSite, setProjSite] = useState(projects[0].siteReference);
+  const [projectGitHub, setProjGitHub] = useState(projects[0].github);
+
+  useEffect(() => {
+    setProjTitle(projects[projectNumber].name);
+    setProjDesc(projects[projectNumber].description);
+    setProjSite(projects[projectNumber].siteReference);
+    setProjGitHub(projects[projectNumber].github);
+  }, [projectNumber]);
+
+  // Centre a lone logo when the project only has one link
+  const [githubPositionX, setGithubPositionX] = useState(-0.3);
+  const [sitePositionX, setSitePositionX] = useState(0.3);
+
+  useEffect(() => {
+    if (projectGitHub !== "" && projectSite !== "") {
+      setGithubPositionX(-0.3);
+      setSitePositionX(0.3);
+    } else if (projectGitHub !== "") {
+      setGithubPositionX(0);
+    } else if (projectSite !== "") {
+      setSitePositionX(0);
+    }
+  }, [projectGitHub, projectSite]);
+
+  const [recentClick, setRecentClick] = useState(false);
+  const [focusedLogo, setFocusedLogo] = useState("start");
+
+  const rightArrow = useRef();
+  const leftArrow = useRef();
+
+  useEffect(() => {
+    switch (focusedLogo) {
+      case "none":
+        animateOut([leftArrow, rightArrow]);
+        break;
+      case "left":
+        animateOut([rightArrow]);
+        animateIn([leftArrow]);
+        break;
+      case "right":
+        animateOut([leftArrow]);
+        animateIn([rightArrow]);
+        break;
+      default:
+        break;
+    }
+  }, [focusedLogo]);
 
   return (
     <group
@@ -126,73 +196,93 @@ const ProjectsScene = forwardRef((_props, ref) => {
       rotation={[SR.x, Math.PI - SR.y, SR.z]}
     >
       <Float rotationIntensity={0.4} floatIntensity={0.1}>
-        {/* Monitor */}
+        {/* Monitor with a portal screen */}
         <primitive
           key={`projectMonitor`}
           object={monitorModel.scene}
           position={[MONITOR.x, MONITOR.y, 0]}
           scale={MONITOR.scale}
         >
-          {/* Per-project screen glow behind the card */}
-          <mesh position={[SCREEN.x, SCREEN.y, SCREEN.z - 0.02]} scale={1.86}>
-            <planeGeometry args={[2, 1]} />
-            <meshBasicMaterial color={color} transparent opacity={0.22} />
-          </mesh>
+          {portalActive && (
+            <mesh key={`monitorPortal`} position={[PORTAL.x, PORTAL.y, PORTAL.z]} scale={PORTAL.scale}>
+              <planeGeometry key={`monitorPortalPlane`} args={[2, 1]} />
+              <MeshPortalMaterial key={`monitorPortalMat`}>
+                <ambientLight intensity={0.5} key={`monitorPortalAmbLi`} />
+                <Environment preset="city" key={`monitorPortalEnv`} />
+                {/* Recessed neon box the text sits inside */}
+                <mesh
+                  castShadow
+                  receiveShadow
+                  rotation-y={-Math.PI * 0.5}
+                  geometry={nodes.Cube.geometry}
+                  scale-y={0.5}
+                  scale-x={0.5}
+                  key={`innerBox`}
+                >
+                  <meshStandardMaterial
+                    color={PROJECT_PALETTE[projectNumber % PROJECT_PALETTE.length]}
+                    key={`innerBoxMat`}
+                  />
+                  <spotLight
+                    castShadow
+                    color={PROJECT_PALETTE[projectNumber % PROJECT_PALETTE.length]}
+                    intensity={2}
+                    position={[10, 10, 10]}
+                    angle={0.15}
+                    penumbra={1}
+                    shadow-normalBias={0.05}
+                    shadow-bias={0.0001}
+                    key={`innerBoxSpotLight`}
+                  />
+                </mesh>
 
-          {/* Clean neon HTML card on the screen */}
-          {active && (
-            <Html
-              center
-              distanceFactor={6}
-              position={[SCREEN.x, SCREEN.y, SCREEN.z]}
-              zIndexRange={[20, 0]}
-              className="viceProjWrap"
-            >
-              <article className="viceProj" style={{ "--proj": color }}>
-                <header className="viceProj__top">
-                  <span className="viceProj__count">
-                    {String(index + 1).padStart(2, "0")}
-                    <em> / {String(PROJECTS.length).padStart(2, "0")}</em>
-                  </span>
-                  <span className="viceProj__kind">{project.kind}</span>
-                </header>
+                {/* Title + description */}
+                <TitleText3D title={projectTitle} position={[0, 0.35, -0.1]} />
+                <DescriptionText3D position={[0, 0, -0.25]} description={projectDesc} />
 
-                <h2 className="viceProj__name">{project.name}</h2>
-                <p className="viceProj__desc">{project.description}</p>
+                {/* Prev / next arrows */}
+                <TitleText3D
+                  ref={leftArrow}
+                  title={"←"}
+                  useNormal
+                  position={[-0.9, 0, -0.2]}
+                  onClick={() => setProjNum(projectNumber - 1)}
+                  onPointerEnter={() => setFocusedLogo("left")}
+                  onPointerLeave={() => setFocusedLogo("none")}
+                />
+                <TitleText3D
+                  ref={rightArrow}
+                  title={"→"}
+                  useNormal
+                  position={[0.9, 0, -0.2]}
+                  onClick={() => setProjNum(projectNumber + 1)}
+                  onPointerEnter={() => setFocusedLogo("right")}
+                  onPointerLeave={() => setFocusedLogo("none")}
+                />
 
-                <ul className="viceProj__tags">
-                  {project.tags.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-
-                <footer className="viceProj__foot">
-                  <div className="viceProj__links">
-                    <a href={project.github} target="_blank" rel="noreferrer" className="viceProj__btn">
-                      GitHub ↗
-                    </a>
-                    {project.live && (
-                      <a
-                        href={project.live}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="viceProj__btn viceProj__btn--solid"
-                      >
-                        {project.liveLabel} ↗
-                      </a>
-                    )}
-                  </div>
-                  <div className="viceProj__nav">
-                    <button type="button" aria-label="Previous project" onClick={() => go(-1)}>
-                      ←
-                    </button>
-                    <button type="button" aria-label="Next project" onClick={() => go(1)}>
-                      →
-                    </button>
-                  </div>
-                </footer>
-              </article>
-            </Html>
+                {/* GitHub + live-site links */}
+                <Logo
+                  ref={githubLogoRef}
+                  key={`githubRef`}
+                  kind="github"
+                  position={[githubPositionX, -0.35, -0.2]}
+                  rotation={[0, Math.PI / 2, 0]}
+                  scale={0.3}
+                  visible={projectGitHub !== ""}
+                  onClick={() => handleClick(projectGitHub, recentClick, setRecentClick)}
+                />
+                <Logo
+                  ref={siteLogoRef}
+                  key={`siteref`}
+                  kind="website"
+                  position={[sitePositionX, -0.35, -0.2]}
+                  rotation={[0, Math.PI / 2, 0]}
+                  scale={0.3}
+                  visible={projectSite !== ""}
+                  onClick={() => handleClick(projectSite, recentClick, setRecentClick)}
+                />
+              </MeshPortalMaterial>
+            </mesh>
           )}
         </primitive>
 
@@ -209,6 +299,9 @@ const ProjectsScene = forwardRef((_props, ref) => {
         >
           Projects
         </Text>
+
+        {/* Focus button */}
+        <ToggleFocusButton scale={0.5} rotation={[-0.3, 0, 0]} position={[0, -0.23, -0.1]} page={"projects"} />
 
         {/* Desk plant */}
         <primitive
@@ -237,6 +330,7 @@ export default ProjectsScene;
 useGLTF.preload("/models/computer_monitor_lowpoly/monitor.glb");
 useGLTF.preload("/models/teenyBoard/cartoon_mini_keyboard.glb");
 useGLTF.preload("/models/plant/low_poly_style_plant.glb");
+useGLTF.preload("/aobox-transformed.glb");
 
 /** Springy scale + flip animation to reveal / hide the scene. */
 function toggleAnimation(scene, camera, isAnimating, setIsAnimating, callbacks = {}) {
