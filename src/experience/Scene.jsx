@@ -113,8 +113,8 @@ export default function Scene() {
         <PresentationControls
           global
           rotation={[0.13, 0.1, 0]}
-          polar={[-0.4, 0.2]}
-          azimuth={[-1, 0.75]}
+          polar={[-0.5, 0.4]}
+          azimuth={[-1.1, 1.0]}
           config={{ mass: 2, tension: 400 }}
           snap={{ mass: 4, tension: 400 }}
         >
