@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { person } from "@/data/resume";
-import { Providers } from "@/components/system/Providers";
-import { OSShell } from "@/components/system/OSShell";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -80,17 +78,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="scanlines antialiased">
+      <body className="antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <a href="#main" className="skip-link font-mono text-sm">
-          skip to content
-        </a>
-        <Providers>
-          <OSShell>{children}</OSShell>
-        </Providers>
+        {children}
       </body>
     </html>
   );
