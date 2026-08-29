@@ -16,6 +16,9 @@ export default function Scene() {
   const [loading, setLoading] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [currentPageName, setCurrentPageName] = useState("home");
+  // Projects/Contact mount only after Home is ready, so the first paint isn't
+  // starved competing for bandwidth with every model at once.
+  const [secondaryReady, setSecondaryReady] = useState(false);
 
   const home = useRef();
   const projects = useRef();
@@ -35,11 +38,18 @@ export default function Scene() {
         home.current.toggleAnimateOut();
       }
     }, 750);
-    return () => clearTimeout(t);
+    // Fallback: mount the secondary scenes even if Home's onLoad is slow.
+    const t2 = setTimeout(() => setSecondaryReady(true), 2500);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(t2);
+    };
   }, []);
 
   const onLoad = useCallback(() => {
     homeReady.current = true;
+    // Home is on screen — now stream in Projects/Contact in the background.
+    setSecondaryReady(true);
     if (!loading && home.current && home.current.scale && home.current.scale.x === 0) {
       home.current.toggleAnimateOut();
     }
@@ -48,6 +58,9 @@ export default function Scene() {
   async function SetPage(pageName) {
     if (animating) return;
     if (pageName === currentPageName) return;
+    // Ignore travel to a scene that hasn't finished mounting yet.
+    if (pageName === "projects" && !projects.current) return;
+    if (pageName === "contact" && !contact.current) return;
 
     setAnimating(true);
 
@@ -119,8 +132,8 @@ export default function Scene() {
           snap={{ mass: 4, tension: 400 }}
         >
           <LaptopScene ref={home} onLoad={onLoad} />
-          <ProjectsScene ref={projects} />
-          <ContactScene ref={contact} />
+          {secondaryReady && <ProjectsScene ref={projects} />}
+          {secondaryReady && <ContactScene ref={contact} />}
         </PresentationControls>
       </Suspense>
 

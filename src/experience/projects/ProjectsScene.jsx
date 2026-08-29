@@ -12,8 +12,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { Environment, Float, MeshPortalMaterial, Text, useGLTF } from "@react-three/drei";
-import { VICE, PROJECT_PALETTE } from "../theme";
+import { Float, MeshPortalMaterial, Text, useGLTF } from "@react-three/drei";
+import { VICE, PROJECT_PALETTE, PROJECT_BACKDROP } from "../theme";
 
 /* Scene layout constants. */
 const SP = { x: 0.0, y: -0.15, z: -0.2 };
@@ -207,9 +207,10 @@ const ProjectsScene = forwardRef((_props, ref) => {
             <mesh key={`monitorPortal`} position={[PORTAL.x, PORTAL.y, PORTAL.z]} scale={PORTAL.scale}>
               <planeGeometry key={`monitorPortalPlane`} args={[2, 1]} />
               <MeshPortalMaterial key={`monitorPortalMat`}>
-                <ambientLight intensity={0.5} key={`monitorPortalAmbLi`} />
-                <Environment preset="city" key={`monitorPortalEnv`} />
-                {/* Recessed neon box the text sits inside */}
+                {/* Lit by ambient + a neon spotlight (no HDR env — cheaper) */}
+                <ambientLight intensity={1.1} key={`monitorPortalAmbLi`} />
+                <pointLight position={[0, 2, 3]} intensity={6} key={`monitorPortalFill`} />
+                {/* Dark recessed box the light text sits inside (high contrast) */}
                 <mesh
                   castShadow
                   receiveShadow
@@ -220,18 +221,15 @@ const ProjectsScene = forwardRef((_props, ref) => {
                   key={`innerBox`}
                 >
                   <meshStandardMaterial
-                    color={PROJECT_PALETTE[projectNumber % PROJECT_PALETTE.length]}
+                    color={PROJECT_BACKDROP[projectNumber % PROJECT_BACKDROP.length]}
                     key={`innerBoxMat`}
                   />
                   <spotLight
-                    castShadow
                     color={PROJECT_PALETTE[projectNumber % PROJECT_PALETTE.length]}
-                    intensity={2}
-                    position={[10, 10, 10]}
-                    angle={0.15}
+                    intensity={2.2}
+                    position={[6, 8, 10]}
+                    angle={0.35}
                     penumbra={1}
-                    shadow-normalBias={0.05}
-                    shadow-bias={0.0001}
                     key={`innerBoxSpotLight`}
                   />
                 </mesh>

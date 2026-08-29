@@ -12,7 +12,7 @@ export const VICE = {
   fog: "#160a26", // deep neon-night haze the whole world fades into
 };
 
-// Neon shades cycled behind each project in the monitor portal.
+// Neon accent cycled per project — used for the portal's spotlight glow.
 export const PROJECT_PALETTE = [
   "#ff2e97", // pink
   "#05d9e8", // cyan
@@ -20,4 +20,15 @@ export const PROJECT_PALETTE = [
   "#ffb03a", // gold
   "#39ff88", // green
   "#ff6b3d", // sunset orange
+];
+
+// Dark, hue-tinted backdrop the 3D text sits on — kept dark on purpose so the
+// light matcap title/description stay high-contrast and readable.
+export const PROJECT_BACKDROP = [
+  "#2e0a1c", // deep magenta
+  "#062028", // deep teal
+  "#180a30", // deep purple
+  "#2e2208", // deep amber
+  "#08281a", // deep green
+  "#2e1109", // deep rust
 ];

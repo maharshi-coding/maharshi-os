@@ -49,8 +49,9 @@ const TitleText3D = forwardRef(
         <Center key={projectTitle.slice(0, 5)}>
           <Text3D
             scale={0.1}
-            curveSegments={32}
+            curveSegments={6}
             bevelEnabled
+            bevelSegments={2}
             bevelSize={0.04}
             bevelThickness={0.1}
             height={0.5}
