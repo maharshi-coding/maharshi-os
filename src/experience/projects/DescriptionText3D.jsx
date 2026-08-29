@@ -1,56 +1,28 @@
-import { Center, Text3D } from "@react-three/drei";
-import { useLoader } from "@react-three/fiber";
-import * as THREE from "three";
+import { Text } from "@react-three/drei";
 
 /**
- * Renders a wrapped block of 3D text for a project description.
- * Adapted from Eli Parker's MIT-licensed interactive portfolio.
+ * Project description as flat, crisp SDF text (troika via drei <Text>).
+ * Extruded 3D text looks broken/ghosted for a small paragraph, so the body
+ * copy is rendered flat for maximum readability while the 3D title, arrows and
+ * logos keep the portal's depth.
  *
  * @param {string} description - the text to render.
  */
-function DescriptionText3D({ description, ...props }) {
-  const [textMatcap] = useLoader(THREE.TextureLoader, ["/matcaps/greyClay.png"]);
-
-  const projectDesc = wrapTextByCharCount(description);
+export default function DescriptionText3D({ description, ...props }) {
   return (
-    <mesh {...props}>
-      <boxGeometry args={[0.1, 0.1, 0.1]} key={`CenteringBoxGeom`} />
-      <meshBasicMaterial color={"#FFFFFF"} key={`CenteringBoxMat`} visible={false} />
-      <Center key={projectDesc.slice(0, 5)}>
-        <Text3D
-          scale={0.05}
-          curveSegments={5}
-          height={0.5}
-          lineHeight={0.75}
-          letterSpacing={0}
-          size={1}
-          font="/fonts/Inter_Bold.json"
-        >
-          {projectDesc}
-          <meshMatcapMaterial matcap={textMatcap} />
-        </Text3D>
-      </Center>
-    </mesh>
+    <Text
+      {...props}
+      font="/fonts/anek-bangla-v5-latin-500.woff"
+      fontSize={0.082}
+      maxWidth={1.55}
+      lineHeight={1.34}
+      textAlign="center"
+      anchorX="center"
+      anchorY="middle"
+      color="#f5eeff"
+      material-toneMapped={false}
+    >
+      {description}
+    </Text>
   );
-}
-
-export default DescriptionText3D;
-
-/**
- * Wraps text to a max number of characters per line, keeping whole words.
- */
-function wrapTextByCharCount(text, maxCharsPerLine = 45) {
-  if (typeof text !== "string") return "";
-  return text
-    .split(" ")
-    .reduce((lines, word) => {
-      const lastLine = lines[lines.length - 1];
-      if (lastLine && (lastLine + " " + word).length <= maxCharsPerLine) {
-        lines[lines.length - 1] = lastLine + " " + word;
-      } else {
-        lines.push(word);
-      }
-      return lines;
-    }, [])
-    .join("\n");
 }
