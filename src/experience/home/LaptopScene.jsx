@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useGLTF, Html, Float } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import gsap from "gsap";
@@ -6,33 +6,14 @@ import ToggleFocusButton from "../utils/ToggleFocusButton.jsx";
 import { person } from "@/data/resume";
 import { VICE } from "../theme";
 
-/* Same desk layout as the Projects scene, so Home reads consistently. */
-const SP = { x: 0.0, y: -0.15, z: -0.2 };
-const SR = { x: -0.1177, y: -0.0544, z: 0 };
-const MONITOR = { x: 0, y: -0.28, scale: 0.5 };
-const KBRD = { x: 0, y: -0.3, z: 0.57, scale: 0.0036 };
-const PLNT = { x: -1.19, y: -0.31, z: -0.07, scale: 0.00106 };
-// Screen centre in group space = monitor position + Projects' portal position
-// scaled by the monitor's scale ([0, 1.45, -0.22] * 0.5).
-const SCREEN = { x: 0, y: MONITOR.y + 1.45 * MONITOR.scale, z: -0.22 * MONITOR.scale };
-
 /**
- * Home scene: the same low-poly monitor/desk used by the Projects scene, with
- * MAHARSHI.OS booting on its screen. Adapted from Eli Parker's MIT-licensed
- * interactive portfolio and reskinned for the Vice City theme.
+ * Home scene: a floating laptop whose screen boots MAHARSHI.OS, plus a focus
+ * button. Kept deliberately minimal — the laptop is the hero. Adapted from Eli
+ * Parker's MIT-licensed interactive portfolio and reskinned for the Vice City theme.
  *
  * @param {Function} onLoad - called the first time the scene mounts.
  */
 const LaptopScene = forwardRef(({ onLoad = () => {}, active = true }, ref) => {
-  const monitorGltf = useGLTF("/models/computer_monitor_lowpoly/monitor.glb");
-  const keyboardGltf = useGLTF("/models/teenyBoard/cartoon_mini_keyboard.glb");
-  const plantGltf = useGLTF("/models/plant/low_poly_style_plant.glb");
-  // Clone so Home and Projects can each mount their own copy of the shared model
-  // (a single GLTF object can't live in two places in the scene graph at once).
-  const monitor = useMemo(() => monitorGltf.scene.clone(), [monitorGltf.scene]);
-  const keyboard = useMemo(() => keyboardGltf.scene.clone(), [keyboardGltf.scene]);
-  const plant = useMemo(() => plantGltf.scene.clone(), [plantGltf.scene]);
-
   // Tell Experience we exist so it can animate us in
   useEffect(() => {
     onLoad();
@@ -86,28 +67,28 @@ const LaptopScene = forwardRef(({ onLoad = () => {}, active = true }, ref) => {
   return (
     // Home starts fully visible (scale 1). It's the first scene shown, so there
     // is no orchestrated spring-in to miss; navigation still hides/reveals it
-    // via the imperative toggle above.
-    <group
-      ref={scene}
-      scale={1}
-      position={[SP.x, SP.y, SP.z]}
-      rotation={[SR.x, Math.PI - SR.y, SR.z]}
-    >
-      <Float rotationIntensity={0.4} floatIntensity={0.1}>
-        {/* Monitor */}
-        <primitive object={monitor} position={[MONITOR.x, MONITOR.y, 0]} scale={MONITOR.scale} />
+    // via the imperative toggle below.
+    <group ref={scene} scale={1}>
+      <Float rotationIntensity={0.4}>
+        {/* Laptop + screen */}
+        <group position-y={-1.2}>
+          <LaptopModel />
 
-        {/* MAHARSHI.OS boot screen, pinned to the monitor's screen as a
-            camera-facing `sprite` billboard so it stays readable at any angle.
-            Only rendered on Home; a sprite is sized by its own local scale, so it
-            wouldn't shrink away with the scene on navigation — gating hides it. */}
-        {active && (
+          {/* MAHARSHI.OS boot screen. Rendered as a `sprite` billboard: a plain
+              `transform` plane is a rigid child, so dragging swings the flat card
+              around the laptop's pivot until it turns edge-on / off to the side
+              ("the screen hangs out"). `sprite` pins it to the anchor but always
+              faces the camera, so it stays glued to the laptop at any rotation.
+              Only rendered on Home — unlike a plain transform plane, a sprite is
+              scaled by the group's *local* scale, so it wouldn't shrink away with
+              the scene on navigation; gating the render hides it instead. */}
+          {active && (
           <Html
             transform
             sprite
             wrapperClass="htmlScreen"
-            distanceFactor={0.62}
-            position={[SCREEN.x, SCREEN.y, SCREEN.z]}
+            distanceFactor={1.14}
+            position={[0, 1.52, -1.35]}
             style={{ pointerEvents: "none" }}
           >
             <div className="viceScreen">
@@ -130,23 +111,11 @@ const LaptopScene = forwardRef(({ onLoad = () => {}, active = true }, ref) => {
               </div>
             </div>
           </Html>
-        )}
+          )}
+        </group>
 
         {/* Move closer / away */}
-        <ToggleFocusButton
-          scale={0.5}
-          rotation={[-0.3, 0, 0]}
-          position={[0, -0.23, -0.1]}
-          page="home"
-        />
-
-        {/* Desk plant */}
-        <primitive object={plant} position={[PLNT.x, PLNT.y, PLNT.z]} scale={PLNT.scale} />
-
-        {/* Tiny keyboard, floated separately */}
-        <Float rotationIntensity={0.4} floatIntensity={0}>
-          <primitive object={keyboard} position={[KBRD.x, KBRD.y, KBRD.z]} scale={KBRD.scale} />
-        </Float>
+        <ToggleFocusButton position={[0, 1.6, -1.8]} />
       </Float>
     </group>
   );
@@ -154,6 +123,75 @@ const LaptopScene = forwardRef(({ onLoad = () => {}, active = true }, ref) => {
 
 export default LaptopScene;
 
-useGLTF.preload("/models/computer_monitor_lowpoly/monitor.glb");
-useGLTF.preload("/models/teenyBoard/cartoon_mini_keyboard.glb");
-useGLTF.preload("/models/plant/low_poly_style_plant.glb");
+/**
+ * The MacBook GLTF, auto-generated by gltfjsx.
+ * Model: "Computer Monitor Lowpoly" family — MacBook model, CC-BY.
+ */
+export function LaptopModel(props) {
+  const group = useRef();
+  const { nodes, materials } = useGLTF("/models/laptop/macbook_model.gltf");
+  return (
+    <group ref={group} {...props} dispose={null}>
+      <group position={[0, 0.52, 0]} scale={[0.1, 0.1, 0.1]}>
+        <mesh geometry={nodes.Circle001.geometry} material={nodes.Circle001.material} />
+        <mesh geometry={nodes.Circle001_1.geometry} material={nodes.Circle001_1.material} />
+        <mesh geometry={nodes.Circle001_2.geometry} material={materials.HeadPhoneHole} />
+        <mesh geometry={nodes.Circle001_3.geometry} material={nodes.Circle001_3.material} />
+        <mesh geometry={nodes.Circle001_4.geometry} material={nodes.Circle001_4.material} />
+        <mesh geometry={nodes.Circle001_5.geometry} material={materials.TouchbarBorder} />
+        <mesh geometry={nodes.Circle001_6.geometry} material={materials.Keyboard} />
+        <mesh
+          geometry={nodes.FrontCameraRing001.geometry}
+          material={materials["CameraRIngBlack.002"]}
+          position={[-0.15, 19.57, -16.15]}
+          scale={5.8}
+        />
+        <mesh
+          geometry={nodes.KeyboardKeyHole.geometry}
+          material={nodes.KeyboardKeyHole.material}
+          position={[-11.79, -0.15, -8.3]}
+          scale={5.8}
+        />
+        <mesh
+          geometry={nodes.RubberFoot.geometry}
+          material={materials.DarkRubber}
+          position={[-11.95, -0.75, 7.86]}
+          scale={5.8}
+        />
+
+        {/* Hinge */}
+        <group position={[0.01, -0.21, -10.56]} scale={5.8}>
+          <mesh geometry={nodes.Circle012.geometry} material={materials.HingeBlack} />
+          <mesh geometry={nodes.Circle012_1.geometry} material={materials.HingeMetal} />
+        </group>
+
+        {/* Bottom case */}
+        <group position={[0, -0.51, 0]} scale={5.8}>
+          <mesh geometry={nodes.Circle006.geometry} material={nodes.Circle006.material} />
+          <mesh geometry={nodes.Circle006_1.geometry} material={nodes.Circle006_1.material} />
+        </group>
+
+        {/* Keyboard */}
+        <group position={[-11.79, -0.15, -8.3]} scale={5.8}>
+          <mesh geometry={nodes.Circle.geometry} material={nodes.Circle.material} />
+          <mesh geometry={nodes.Circle_1.geometry} material={materials.Key} />
+          <mesh geometry={nodes.Circle_2.geometry} material={materials.Touchbar} />
+        </group>
+
+        {/* Screen */}
+        <group position={[0.01, -0.47, -10.41]} rotation={[1.31, 0, 0]} scale={5.8}>
+          <mesh geometry={nodes.Circle002.geometry} material={nodes.Circle002.material} />
+          <mesh geometry={nodes.Circle002_1.geometry} material={materials.Screen} />
+          <mesh geometry={nodes.Circle002_2.geometry} material={materials.ScreenGlass} />
+        </group>
+
+        <group position={[12.2, 0.03, 0.6]} scale={5.8}>
+          <mesh geometry={nodes.Circle003.geometry} material={nodes.Circle003.material} />
+          <mesh geometry={nodes.Circle003_1.geometry} material={nodes.Circle003_1.material} />
+        </group>
+      </group>
+    </group>
+  );
+}
+
+useGLTF.preload("/models/laptop/macbook_model.gltf");
