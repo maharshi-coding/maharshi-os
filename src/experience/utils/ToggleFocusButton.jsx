@@ -73,7 +73,16 @@ export default function ToggleFocusButton({ page, ...props }) {
     <group {...props}>
       <mesh ref={(el) => (button.current = el)} onClick={toggleFocus}>
         <icosahedronGeometry args={[0.2, 0]} />
-        <meshNormalMaterial />
+        {/* Neon faceted crystal — catches the scene's pink/cyan point lights
+            (replaces the rainbow normal material, which clashed with the theme). */}
+        <meshStandardMaterial
+          color={VICE.purple}
+          emissive={VICE.pink}
+          emissiveIntensity={0.4}
+          metalness={0.7}
+          roughness={0.2}
+          flatShading
+        />
       </mesh>
       <Text
         font="/fonts/anek-bangla-v5-latin-500.woff"

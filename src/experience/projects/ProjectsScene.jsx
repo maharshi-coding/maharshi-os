@@ -81,7 +81,6 @@ const ProjectsScene = forwardRef((_props, ref) => {
     },
   ]);
 
-  const [isAnimating, setIsAnimating] = useState(false);
   const [portalActive, setPortalActive] = useState(false);
 
   const scene = useRef();
@@ -104,20 +103,24 @@ const ProjectsScene = forwardRef((_props, ref) => {
     }
   });
 
-  useImperativeHandle(ref, () => ({
-    scale: scene.current.scale,
-    toggleAnimateOut: () =>
-      toggleAnimation(scene, camera, isAnimating, setIsAnimating, {
-        onOpenStart: () => setPortalActive(true),
-        onCloseComplete: () => setPortalActive(false),
-      }),
-    toggleOut: () => {
-      const opening = scene.current.scale.x === 0;
-      if (opening) setPortalActive(true);
-      ToggleNoAnimation(scene, isAnimating, setIsAnimating);
-      if (!opening) setPortalActive(false);
-    },
-  }));
+  useImperativeHandle(
+    ref,
+    () => ({
+      scale: scene.current.scale,
+      toggleAnimateOut: () =>
+        toggleAnimation(scene, camera, {
+          onOpenStart: () => setPortalActive(true),
+          onCloseComplete: () => setPortalActive(false),
+        }),
+      toggleOut: () => {
+        const opening = scene.current.scale.x < 1;
+        if (opening) setPortalActive(true);
+        ToggleNoAnimation(scene);
+        if (!opening) setPortalActive(false);
+      },
+    }),
+    []
+  );
 
   const [projectButtonCooldown, setProjectButtonCooldown] = useState(false);
 
@@ -330,53 +333,60 @@ useGLTF.preload("/models/teenyBoard/cartoon_mini_keyboard.glb");
 useGLTF.preload("/models/plant/low_poly_style_plant.glb");
 useGLTF.preload("/aobox-transformed.glb");
 
-/** Springy scale + flip animation to reveal / hide the scene. */
-function toggleAnimation(scene, camera, isAnimating, setIsAnimating, callbacks = {}) {
-  if (isAnimating) return;
-  setIsAnimating(true);
-  scene.current.visible = true;
+/**
+ * Springy scale + flip animation to reveal / hide the scene. Intentionally has
+ * no `isAnimating` re-entrancy flag: that guard could latch true when a gsap
+ * onComplete was dropped (StrictMode remount / interrupted tween), leaving the
+ * scene stuck at scale 0 (invisible). Killing any in-flight tween first makes
+ * every call resolve cleanly.
+ */
+function toggleAnimation(scene, camera, callbacks = {}) {
+  const g = scene.current;
+  if (!g) return;
 
-  const opening = scene.current.scale.x === 0;
-  const targetScale = opening ? { x: 2, y: 2, z: 2 } : { x: 0, y: 0, z: 0 };
+  const opening = g.scale.x < 1;
+  const targetScale = opening ? 2 : 0;
   const targetRotation = opening ? -0.1575 : Math.PI - 0.1575;
+
+  gsap.killTweensOf(g.scale);
+  gsap.killTweensOf(g.rotation);
+  g.visible = true;
 
   if (opening && callbacks.onOpenStart) callbacks.onOpenStart();
 
-  gsap.to(scene.current.scale, {
+  gsap.to(g.scale, {
     duration: 0.5,
-    x: targetScale.x,
-    y: targetScale.y,
-    z: targetScale.z,
+    x: targetScale,
+    y: targetScale,
+    z: targetScale,
     ease: "power2.inOut",
     onUpdate: () => camera.updateProjectionMatrix(),
     onComplete: () => {
       if (!opening) {
-        scene.current.visible = false;
+        g.visible = false;
         if (callbacks.onCloseComplete) callbacks.onCloseComplete();
       }
-      setIsAnimating(false);
     },
   });
 
-  gsap.to(scene.current.rotation, {
+  gsap.to(g.rotation, {
     duration: 0.5,
     y: targetRotation,
     ease: "power2.inOut",
     onUpdate: () => camera.updateProjectionMatrix(),
-    onComplete: () => setIsAnimating(false),
   });
 }
 
 /** Instant show / hide used when jumping between pages. */
-function ToggleNoAnimation(scene, isAnimating, setIsAnimating) {
-  if (isAnimating) return;
-  setIsAnimating(true);
-  scene.current.visible = true;
-  if (scene.current.scale.x > 0) {
-    scene.current.scale.set(0, 0, 0);
-    scene.current.visible = false;
+function ToggleNoAnimation(scene) {
+  const g = scene.current;
+  if (!g) return;
+  gsap.killTweensOf(g.scale);
+  if (g.scale.x > 0.5) {
+    g.scale.set(0, 0, 0);
+    g.visible = false;
   } else {
-    scene.current.scale.set(2, 2, 2);
+    g.visible = true;
+    g.scale.set(2, 2, 2);
   }
-  setIsAnimating(false);
 }

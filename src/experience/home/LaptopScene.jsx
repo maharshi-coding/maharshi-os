@@ -1,5 +1,5 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { useGLTF, Text, Html, Float } from "@react-three/drei";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { useGLTF, Html, Float } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import ToggleFocusButton from "../utils/ToggleFocusButton.jsx";
@@ -7,17 +7,13 @@ import { person } from "@/data/resume";
 import { VICE } from "../theme";
 
 /**
- * Home scene: a floating laptop whose screen boots MAHARSHI.OS, plus the
- * name plate and a focus button. Adapted from Eli Parker's MIT-licensed
- * interactive portfolio and reskinned for the Vice City theme.
+ * Home scene: a floating laptop whose screen boots MAHARSHI.OS, plus a focus
+ * button. Kept deliberately minimal — the laptop is the hero. Adapted from Eli
+ * Parker's MIT-licensed interactive portfolio and reskinned for the Vice City theme.
  *
  * @param {Function} onLoad - called the first time the scene mounts.
  */
-const LaptopScene = forwardRef(({ onLoad = () => {} }, ref) => {
-  const font = "/fonts/anek-bangla-v5-latin-500.woff";
-
-  const [isAnimating, setIsAnimating] = useState(false);
-
+const LaptopScene = forwardRef(({ onLoad = () => {}, active = true }, ref) => {
   // Tell Experience we exist so it can animate us in
   useEffect(() => {
     onLoad();
@@ -26,63 +22,74 @@ const LaptopScene = forwardRef(({ onLoad = () => {} }, ref) => {
   const scene = useRef();
   const { camera } = useThree();
 
-  useImperativeHandle(ref, () => ({
-    scale: scene.current.scale,
+  useImperativeHandle(
+    ref,
+    () => ({
+      scale: scene.current.scale,
 
-    // Springy scale toggle between hidden (0) and shown (1)
-    toggleAnimateOut: () => {
-      if (!isAnimating) {
-        setIsAnimating(true);
-        scene.current.visible = true;
-
-        const targetScale =
-          scene.current.scale.x === 1 ? { x: 0, y: 0, z: 0 } : { x: 1, y: 1, z: 1 };
-
-        gsap.to(scene.current.scale, {
+      // Springy scale toggle between hidden (0) and shown (1). Deliberately has
+      // no re-entrancy state flag: an earlier version guarded on an `isAnimating`
+      // state whose gsap onComplete could be dropped (StrictMode remount), which
+      // left the flag stuck true and the scene frozen at scale 0 (invisible).
+      // Killing any in-flight tween first makes every call resolve cleanly.
+      toggleAnimateOut: () => {
+        const g = scene.current;
+        if (!g) return;
+        const target = g.scale.x < 0.5 ? 1 : 0;
+        gsap.killTweensOf(g.scale);
+        g.visible = true;
+        gsap.to(g.scale, {
           duration: 0.5,
-          x: targetScale.x,
-          y: targetScale.y,
-          z: targetScale.z,
+          x: target,
+          y: target,
+          z: target,
           ease: "power2.inOut",
           onUpdate: () => camera.updateProjectionMatrix(),
           onComplete: () => {
-            if (targetScale.x === 0) scene.current.visible = false;
-            setIsAnimating(false);
+            if (target === 0) g.visible = false;
           },
         });
-      }
-    },
+      },
 
-    // Instant toggle used when switching pages
-    toggleOut: () => {
-      if (!isAnimating) {
-        setIsAnimating(true);
-        scene.current.visible = true;
-        if (scene.current.scale.x > 0) {
-          scene.current.scale.set(0, 0, 0);
-          scene.current.visible = false;
-        } else {
-          scene.current.scale.set(1, 1, 1);
-        }
-        setIsAnimating(false);
-      }
-    },
-  }));
+      // Instant toggle used when switching pages
+      toggleOut: () => {
+        const g = scene.current;
+        if (!g) return;
+        gsap.killTweensOf(g.scale);
+        const v = g.scale.x >= 0.5 ? 0 : 1;
+        g.scale.set(v, v, v);
+        g.visible = v === 1;
+      },
+    }),
+    []
+  );
 
   return (
-    <group ref={scene} scale={0} visible={false}>
+    // Home starts fully visible (scale 1). It's the first scene shown, so there
+    // is no orchestrated spring-in to miss; navigation still hides/reveals it
+    // via the imperative toggle below.
+    <group ref={scene} scale={1}>
       <Float rotationIntensity={0.4}>
         {/* Laptop + screen */}
         <group position-y={-1.2}>
           <LaptopModel />
 
-          {/* MAHARSHI.OS boot screen rendered onto the laptop display */}
+          {/* MAHARSHI.OS boot screen. Rendered as a `sprite` billboard: a plain
+              `transform` plane is a rigid child, so dragging swings the flat card
+              around the laptop's pivot until it turns edge-on / off to the side
+              ("the screen hangs out"). `sprite` pins it to the anchor but always
+              faces the camera, so it stays glued to the laptop at any rotation.
+              Only rendered on Home — unlike a plain transform plane, a sprite is
+              scaled by the group's *local* scale, so it wouldn't shrink away with
+              the scene on navigation; gating the render hides it instead. */}
+          {active && (
           <Html
             transform
+            sprite
             wrapperClass="htmlScreen"
             distanceFactor={1.14}
             position={[0, 1.52, -1.35]}
-            rotation-x={-0.256}
+            style={{ pointerEvents: "none" }}
           >
             <div className="viceScreen">
               <div className="viceScreen__bar">
@@ -104,34 +111,8 @@ const LaptopScene = forwardRef(({ onLoad = () => {} }, ref) => {
               </div>
             </div>
           </Html>
+          )}
         </group>
-
-        {/* Name plate */}
-        <Text
-          font={font}
-          fontSize={0.7}
-          position={[2.5, 0.5, -0.3]}
-          rotation-y={-1}
-          rotation-z={0.1}
-          maxWidth={2}
-          lineHeight={1}
-          color={VICE.pink}
-        >
-          {person.name}
-        </Text>
-
-        {/* Hint */}
-        <Text
-          font={font}
-          fontSize={0.125}
-          position={[-2, 0.75, -1.25]}
-          rotation={[-0, -0.1, 0]}
-          maxWidth={2}
-          lineHeight={1}
-          color={VICE.cyan}
-        >
-          {"Drag me! ↔"}
-        </Text>
 
         {/* Move closer / away */}
         <ToggleFocusButton position={[0, 1.6, -1.8]} />

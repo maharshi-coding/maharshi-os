@@ -13,47 +13,39 @@ const ContactScene = lazy(() => import("./contact/ContactScene.jsx"));
  * Adapted from Eli Parker's MIT-licensed interactive portfolio.
  */
 export default function Scene() {
-  const [loading, setLoading] = useState(true);
-  const [animating, setAnimating] = useState(false);
+  // Blocks navigation until Home has mounted.
+  const [animating, setAnimating] = useState(true);
   const [currentPageName, setCurrentPageName] = useState("home");
   // Projects/Contact mount only after Home is ready, so the first paint isn't
   // starved competing for bandwidth with every model at once.
   const [secondaryReady, setSecondaryReady] = useState(false);
+  // Flips true once Home's model has finished loading and it has mounted.
+  const [homeLoaded, setHomeLoaded] = useState(false);
 
   const home = useRef();
   const projects = useRef();
   const contact = useRef();
-  const homeReady = useRef(false);
 
   const { camera } = useThree();
 
-  // Small delay, then animate the home scene in
+  // Fallback: stream in the secondary scenes even if Home's onLoad is slow.
   useEffect(() => {
-    setLoading(true);
-    setAnimating(true);
-    const t = setTimeout(() => {
-      setLoading(false);
-      setAnimating(false);
-      if (homeReady.current && home.current && home.current.scale && home.current.scale.x === 0) {
-        home.current.toggleAnimateOut();
-      }
-    }, 750);
-    // Fallback: mount the secondary scenes even if Home's onLoad is slow.
-    const t2 = setTimeout(() => setSecondaryReady(true), 2500);
-    return () => {
-      clearTimeout(t);
-      clearTimeout(t2);
-    };
+    const t = setTimeout(() => setSecondaryReady(true), 2500);
+    return () => clearTimeout(t);
   }, []);
 
   const onLoad = useCallback(() => {
-    homeReady.current = true;
+    setHomeLoaded(true);
     // Home is on screen — now stream in Projects/Contact in the background.
     setSecondaryReady(true);
-    if (!loading && home.current && home.current.scale && home.current.scale.x === 0) {
-      home.current.toggleAnimateOut();
-    }
-  }, [loading]);
+  }, []);
+
+  // Home renders at full scale from the start (see LaptopScene), so there is no
+  // fragile intro animation that can be missed — just unblock navigation once
+  // the scene has mounted.
+  useEffect(() => {
+    if (homeLoaded) setAnimating(false);
+  }, [homeLoaded]);
 
   async function SetPage(pageName) {
     if (animating) return;
@@ -131,7 +123,7 @@ export default function Scene() {
           config={{ mass: 2, tension: 400 }}
           snap={{ mass: 4, tension: 400 }}
         >
-          <LaptopScene ref={home} onLoad={onLoad} />
+          <LaptopScene ref={home} onLoad={onLoad} active={currentPageName === "home"} />
           {secondaryReady && <ProjectsScene ref={projects} />}
           {secondaryReady && <ContactScene ref={contact} />}
         </PresentationControls>

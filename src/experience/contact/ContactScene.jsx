@@ -24,15 +24,14 @@ const LIVE_SITE = "https://maharshi-os.netlify.app";
  */
 const ContactScene = forwardRef((_props, ref) => {
   const scene = useRef();
-  const [isAnimating, setIsAnimating] = useState(false);
   const { camera } = useThree();
 
   useImperativeHandle(
     ref,
     () => ({
       scale: scene.current.scale,
-      toggleAnimateOut: () => toggleAnimation(scene, camera, isAnimating, setIsAnimating),
-      toggleOut: () => ToggleNoAnimation(scene, isAnimating, setIsAnimating),
+      toggleAnimateOut: () => toggleAnimation(scene, camera),
+      toggleOut: () => ToggleNoAnimation(scene),
     }),
     []
   );
@@ -142,39 +141,45 @@ const ContactScene = forwardRef((_props, ref) => {
 
 export default ContactScene;
 
-/** Springy scale animation to reveal / hide the scene. */
-function toggleAnimation(scene, camera, isAnimating, setIsAnimating) {
-  if (isAnimating) return;
-  setIsAnimating(true);
-  scene.current.visible = true;
+/**
+ * Springy scale animation to reveal / hide the scene. No `isAnimating` guard:
+ * it could latch true if a gsap onComplete was dropped (StrictMode remount /
+ * interrupted tween), freezing the scene at scale 0. Killing any in-flight
+ * tween first keeps every call clean.
+ */
+function toggleAnimation(scene, camera) {
+  const g = scene.current;
+  if (!g) return;
 
-  const animatedIn = scene.current.scale.x === 1;
-  const targetScale = animatedIn ? { x: 0, y: 0, z: 0 } : { x: 1, y: 1, z: 1 };
+  const animatedIn = g.scale.x >= 0.5;
+  const target = animatedIn ? 0 : 1;
 
-  gsap.to(scene.current.scale, {
+  gsap.killTweensOf(g.scale);
+  g.visible = true;
+
+  gsap.to(g.scale, {
     duration: 0.5,
-    x: targetScale.x,
-    y: targetScale.y,
-    z: targetScale.z,
+    x: target,
+    y: target,
+    z: target,
     ease: animatedIn ? "elastic.out(1,1)" : "elastic.out(1,0.5)",
     onUpdate: () => camera.updateProjectionMatrix(),
     onComplete: () => {
-      if (targetScale.x === 0) scene.current.visible = false;
-      setIsAnimating(false);
+      if (target === 0) g.visible = false;
     },
   });
 }
 
 /** Instant show / hide used when jumping between pages. */
-function ToggleNoAnimation(scene, isAnimating, setIsAnimating) {
-  if (isAnimating) return;
-  setIsAnimating(true);
-  scene.current.visible = true;
-  if (scene.current.scale.x > 0) {
-    scene.current.scale.set(0, 0, 0);
-    scene.current.visible = false;
+function ToggleNoAnimation(scene) {
+  const g = scene.current;
+  if (!g) return;
+  gsap.killTweensOf(g.scale);
+  if (g.scale.x > 0.5) {
+    g.scale.set(0, 0, 0);
+    g.visible = false;
   } else {
-    scene.current.scale.set(1, 1, 1);
+    g.visible = true;
+    g.scale.set(1, 1, 1);
   }
-  setIsAnimating(false);
 }
