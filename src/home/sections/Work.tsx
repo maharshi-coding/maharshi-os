@@ -6,8 +6,9 @@ import { projects, type Project } from "@/data/resume";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-function ProjectRow({ project, index }: { project: Project; index: number }) {
+function ProjectRow({ project, index, total }: { project: Project; index: number; total: number }) {
   const num = String(index + 1).padStart(2, "0");
+  const count = String(total).padStart(2, "0");
   return (
     <motion.article
       className="hx-work__row"
@@ -19,7 +20,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
       <div className="hx-work__body">
         <div className="hx-work__index">
           <span>{num}</span>
-          <span className="hx-work__count">/ 06</span>
+          <span className="hx-work__count">/ {count}</span>
         </div>
         <p className="hx-work__kind">{project.kind}</p>
         <h3 className="hx-work__name">{project.name}</h3>
@@ -78,14 +79,14 @@ export default function Work() {
           <p className="hx-eyebrow">Selected Work</p>
           <h2 className="hx-h2">Products I&apos;ve shipped end-to-end.</h2>
           <p className="hx-lead">
-            Six projects across AI agents, full-stack apps, mobile and computer vision — each
-            taken from idea to a running, tested product.
+            Selected projects across AI agents, full-stack apps, mobile and computer vision —
+            each taken from idea to a running, tested product.
           </p>
         </header>
 
         <div className="hx-work__list">
           {projects.map((p, i) => (
-            <ProjectRow key={p.id} project={p} index={i} />
+            <ProjectRow key={p.id} project={p} index={i} total={projects.length} />
           ))}
         </div>
       </div>

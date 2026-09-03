@@ -58,12 +58,11 @@ const jsonLd = {
   name: person.name,
   email: `mailto:${person.email}`,
   url: siteUrl,
-  sameAs: [person.github],
+  sameAs: [person.github, person.linkedin],
   jobTitle: "AI Solutions Developer · Full-Stack Engineer",
   alumniOf: [
     { "@type": "CollegeOrUniversity", name: "Texas A&M University–Corpus Christi" },
     { "@type": "CollegeOrUniversity", name: "Pandit Deendayal Energy University" },
-    { "@type": "CollegeOrUniversity", name: "Government Polytechnic, Ahmedabad" },
   ],
 };
 

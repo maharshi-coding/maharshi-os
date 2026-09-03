@@ -70,9 +70,16 @@ export const navItems = [
 
 export const resumeHref = "/Maharshi-Barot-Resume.pdf";
 
-/** Contact / social links (confirmed: GitHub, email, résumé). */
+/** Contact / social links. */
 export const socials = [
   { id: "github", label: "GitHub", value: "github.com/maharshi-coding", href: person.github, external: true },
+  {
+    id: "linkedin",
+    label: "LinkedIn",
+    value: "linkedin.com/in/maharshi-barot",
+    href: person.linkedin,
+    external: true,
+  },
   { id: "email", label: "Email", value: person.email, href: `mailto:${person.email}`, external: false },
   { id: "resume", label: "Résumé", value: "Maharshi-Barot-Resume.pdf", href: resumeHref, external: true },
 ];

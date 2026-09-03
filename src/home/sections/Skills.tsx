@@ -53,7 +53,8 @@ export default function Skills() {
   const [hover, setHover] = useState<string | null>(null);
   const [hoverProject, setHoverProject] = useState<string | null>(null);
 
-  const activeProjects = hover ? skillToProjects.get(hover) ?? new Set<string>() : null;
+  const hoveredProjects = hover ? skillToProjects.get(hover) : undefined;
+  const activeProjects = hoveredProjects && hoveredProjects.size ? hoveredProjects : null;
 
   const projectToSkills = useMemo(() => {
     const map = new Map<string, Set<string>>();
