@@ -10,7 +10,7 @@ export const person = {
   tagline: "I ship AI products end-to-end — from prompt to production.",
   email: "barotmaharshi393@gmail.com",
   github: "https://github.com/maharshi-coding",
-  location: "United States",
+  location: "Corpus Christi, TX, USA",
 } as const;
 
 export interface EducationEntry {
@@ -26,25 +26,17 @@ export const education: EducationEntry[] = [
   {
     id: "tamucc",
     institution: "Texas A&M University–Corpus Christi",
-    degree: "M.S. in Computer and Information Science",
-    period: "Ongoing",
-    detail: "United States",
+    degree: "M.S. in Computer Science",
+    period: "Jan 2026 – Dec 2027",
+    detail: "GPA 3.5 / 4.0",
     status: "RUNNING",
   },
   {
     id: "pdeu",
     institution: "Pandit Deendayal Energy University",
-    degree: "B.Tech in Computer Science & Engineering",
+    degree: "B.E. in Computer Engineering",
     period: "Sep 2022 – Jun 2025",
-    detail: "CGPA 7.97 / 10",
-    status: "COMPLETE",
-  },
-  {
-    id: "gpa",
-    institution: "Government Polytechnic, Ahmedabad",
-    degree: "Diploma in Computer Engineering",
-    period: "Aug 2019 – Jun 2022",
-    detail: "CGPA 9.11 / 10",
+    detail: "GPA 3.2 / 4.0",
     status: "COMPLETE",
   },
 ];
@@ -61,40 +53,39 @@ export interface ExperienceEntry {
 
 export const experience: ExperienceEntry[] = [
   {
-    id: "independent",
-    role: "Independent AI Solutions Developer",
-    org: "Self-directed",
-    period: "2024 – Present",
-    location: "—",
+    id: "meeka",
+    role: "Software Developer",
+    org: "Meeka Consultancy LLC",
+    period: "Jan 2026 – Jun 2026",
+    location: "United States",
     level: "EXEC",
     logs: [
-      "Built and shipped multiple AI-powered apps and autonomous agents end-to-end — a four-agent Amazon-seller-protection system on AWS Bedrock (Seller Shield), a five-agent DataHub metadata-governance system (DataHub Steward Squad), an autonomous insurance-appeal agent (Overturn), and an AI Tutor mobile app (React Native + OpenAI APIs).",
-      "Integrated LLMs via REST APIs with prompt engineering and iterative evaluation to improve output quality and reliability.",
-      "Demonstrated projects to non-technical users, gathered feedback, and maintained documentation for long-term handoff.",
+      "Shipped end-to-end frontend and backend features across a live production codebase and cloud services — implementing APIs and resolving defects through debugging.",
+      "Strengthened production quality across 12 collaborative software releases through code reviews, targeted testing, and DevOps release execution.",
     ],
   },
   {
-    id: "freelance",
-    role: "Freelance Full Stack Developer",
-    org: "Remote clients",
+    id: "treta",
+    role: "AI & LLM Product Developer Intern",
+    org: "Treta Gen.",
     period: "Jun 2025 – Nov 2025",
-    location: "Remote",
+    location: "India",
     level: "EXEC",
     logs: [
-      "Developed full-stack applications using React.js, .NET 8, and PostgreSQL, including scalable APIs and auth systems.",
-      "Managed client requirements directly, translating non-technical needs into working technical solutions.",
+      "Prioritized validated opportunities across ambiguous customer problems by applying LLMs, Python scripting, and machine-learning experimentation to test hypotheses in Linux/Unix environments.",
+      "Accelerated production AI product launches and strengthened reliability through rapid prototyping, ML evaluation, and root-cause debugging across DevOps deployment practices.",
     ],
   },
   {
     id: "bws",
     role: "Full Stack Web Development Intern",
-    org: "BWS Certifications",
+    org: "Business Web Solutions",
     period: "Jan 2025 – May 2025",
     location: "India",
     level: "PROC",
     logs: [
-      "Delivered full-stack features using React.js, Django, Bootstrap, JavaScript, and Python with strong performance feedback.",
-      "Built REST APIs, integrated backend services with the frontend, and collaborated in Agile sprint cycles.",
+      "Delivered production-ready, customer-facing full-stack features across Agile sprints using TypeScript, Node.js, and strong engineering fundamentals.",
+      "Coordinated committed sprint deliveries across cross-functional teams by debugging implementation blockers and validating web services through clear technical communication.",
     ],
   },
 ];
@@ -377,38 +368,65 @@ export const skillCategories = [
     label: "AI / LLM",
     skills: [
       "OpenAI API",
+      "LangChain",
       "Prompt Engineering",
       "RAG",
+      "Agent-Based Systems",
       "LLM Evaluation",
+      "PyTorch",
       "NLP",
       "Workflow Automation",
-      "Agent-Based Systems",
     ],
   },
   {
     id: "lang",
     label: "Languages",
-    skills: ["Python", "C++", "Java", "JavaScript", "TypeScript", "C#", "SQL", "HTML", "CSS"],
+    skills: ["Python", "TypeScript", "JavaScript", "C#", "C/C++", "Java", "SQL", "PHP", "MATLAB"],
   },
   {
     id: "frontend",
     label: "Frontend",
-    skills: ["React.js", "React Native", "Next.js", "Tailwind CSS", "Bootstrap"],
+    skills: ["React.js", "Next.js", "React Native", "Angular", "Tailwind CSS", "Bootstrap", "HTML/CSS"],
   },
   {
     id: "backend",
     label: "Backend",
-    skills: ["Node.js", "Express.js", "Django", "FastAPI", ".NET 8", "REST APIs"],
+    skills: ["Node.js", "Express.js", "Django", "FastAPI", "Flask", "ASP.NET", "Spring", ".NET 8", "REST APIs"],
   },
   {
     id: "db",
     label: "Databases",
-    skills: ["PostgreSQL", "MongoDB", "Firebase Firestore", "SQLite"],
+    skills: [
+      "PostgreSQL",
+      "MySQL",
+      "MongoDB",
+      "DynamoDB",
+      "Redis",
+      "Elasticsearch",
+      "Oracle",
+      "Microsoft SQL Server",
+      "Firebase Firestore",
+      "SQLite",
+    ],
   },
   {
     id: "cloud",
     label: "Cloud / Tools",
-    skills: ["Firebase", "Stripe API", "Docker", "Mapbox", "Git", "JWT Auth", "CI/CD (GitHub Actions)"],
+    skills: [
+      "AWS",
+      "GCP",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Terraform",
+      "Linux/Unix",
+      "Git",
+      "CI/CD (GitHub Actions)",
+      "Firebase",
+      "Stripe API",
+      "Mapbox",
+      "JWT Auth",
+    ],
   },
 ] as const;
 
@@ -443,6 +461,8 @@ export const skillEdges: [string, string][] = [
   ["TypeScript", "Overturn"],
   ["Agent-Based Systems", "Overturn"],
   ["Firebase Firestore", "Overturn"],
+  ["AWS", "Seller Shield"],
+  ["GCP", "Overturn"],
 ];
 
 /** Factual counters for the metrics section — all derived from the resume. */
@@ -450,7 +470,7 @@ export const metrics = [
   { value: 6, suffix: "", label: "apps shipped end-to-end", note: "AI, mobile, web and CV projects" },
   { value: 9, suffix: "", label: "programming languages", note: "Python to C# to TypeScript" },
   { value: 4, suffix: "", label: "backend ecosystems", note: "Node, Django, FastAPI, .NET 8" },
-  { value: 9.11, suffix: "/10", label: "diploma CGPA", note: "Government Polytechnic, Ahmedabad" },
+  { value: 3.5, suffix: "/4", label: "master's GPA", note: "Texas A&M University–Corpus Christi" },
 ] as const;
 
 export const sections = [
