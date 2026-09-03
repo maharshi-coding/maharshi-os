@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { navItems, resumeHref } from "./content";
+import { navItems } from "./content";
 import { scrollToId } from "./SmoothScroll";
 
 /**
@@ -64,10 +64,10 @@ export default function Nav() {
         ))}
       </div>
 
-      <a className="hx-nav__cta" href={resumeHref} target="_blank" rel="noopener noreferrer">
-        Résumé
+      <button type="button" className="hx-nav__cta" onClick={() => scrollToId("contact")}>
+        Let&apos;s talk
         <ArrowUpRight size={14} strokeWidth={2} />
-      </a>
+      </button>
     </nav>
   );
 }

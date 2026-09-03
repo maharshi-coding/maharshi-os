@@ -68,8 +68,6 @@ export const navItems = [
   { id: "contact", label: "Contact" },
 ];
 
-export const resumeHref = "/Maharshi-Barot-Resume.pdf";
-
 /** Contact / social links. */
 export const socials = [
   { id: "github", label: "GitHub", value: "github.com/maharshi-coding", href: person.github, external: true },
@@ -81,5 +79,4 @@ export const socials = [
     external: true,
   },
   { id: "email", label: "Email", value: person.email, href: `mailto:${person.email}`, external: false },
-  { id: "resume", label: "Résumé", value: "Maharshi-Barot-Resume.pdf", href: resumeHref, external: true },
 ];

@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { person } from "@/data/resume";
-import { heroNodes, roleWords, resumeHref } from "../content";
+import { heroNodes, roleWords } from "../content";
 import { scrollToId } from "../SmoothScroll";
 
 const DigitalCore = dynamic(() => import("../DigitalCore"), { ssr: false });
@@ -110,10 +110,10 @@ export default function Hero({ reduced }: { reduced: boolean }) {
             View my work
             <ArrowRight size={15} strokeWidth={2} />
           </button>
-          <a className="hx-btn" href={resumeHref} target="_blank" rel="noopener noreferrer">
-            Download résumé
-            <ArrowUpRight size={15} strokeWidth={2} />
-          </a>
+          <button type="button" className="hx-btn" onClick={() => scrollToId("contact")}>
+            Get in touch
+            <ArrowRight size={15} strokeWidth={2} />
+          </button>
         </div>
 
         <div className="hx-nodes" onMouseLeave={() => setActive(null)}>

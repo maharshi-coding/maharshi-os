@@ -717,6 +717,8 @@ body {
   padding: 9px 16px;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
+  background: none;
+  cursor: pointer;
   font: 500 12px/1 var(--font-mono), monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
