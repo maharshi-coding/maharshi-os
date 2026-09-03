@@ -61,8 +61,8 @@ export const experience: ExperienceEntry[] = [
     location: "Corpus Christi, TX",
     level: "EXEC",
     logs: [
-      "Delivered core computer science instruction to undergraduate students by teaching Data Structures, covering algorithmic problem-solving and efficient data organization techniques.",
-      "Guided undergraduate students through foundational computational thinking by teaching Introduction to Problem Solving, building their programming logic and coding fundamentals.",
+      "Strengthened undergraduates' command of algorithmic problem-solving and efficient data organization across a core Data Structures course by leading labs, live code walkthroughs, and office-hour support.",
+      "Built first-year students' programming fundamentals across an Introduction to Problem Solving course by teaching computational-thinking logic and guiding them from pseudocode to clean, working code.",
     ],
   },
   {

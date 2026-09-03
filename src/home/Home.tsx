@@ -5,6 +5,7 @@ import Background from "./Background";
 import CustomCursor from "./CustomCursor";
 import Nav from "./Nav";
 import SmoothScroll from "./SmoothScroll";
+import Companion from "./companion/Companion";
 import Hero from "./sections/Hero";
 import Work from "./sections/Work";
 import Journey from "./sections/Journey";
@@ -24,6 +25,7 @@ export default function Home() {
       <div className="hx">
         <Background reduced={reduced} />
         <CustomCursor />
+        <Companion />
         <SmoothScroll reduced={reduced} />
         <motion.div className="hx-progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
         <Nav />
