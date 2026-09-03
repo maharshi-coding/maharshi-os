@@ -7,16 +7,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "PROJECT VICE // MAHARSHI.EXE — Maharshi Barot",
-    template: "%s · PROJECT VICE",
+    default: "Maharshi Barot — AI Solutions Developer & Full-Stack Engineer",
+    template: "%s · Maharshi Barot",
   },
   description:
-    "Maharshi Barot — AI Solutions Developer and Full-Stack Engineer. An interactive neon-noir portfolio built like an open-world game: every project is a mission, every stat is real, all shipped end-to-end.",
+    "Maharshi Barot — AI Solutions Developer and Full-Stack Engineer building intelligent products from idea to production. AI agents, full-stack apps, mobile, automation, computer vision — shipped end-to-end.",
   keywords: [
     "Maharshi Barot",
     "AI developer",
+    "AI solutions developer",
     "full-stack engineer",
     "LLM",
+    "AI agents",
     "React",
     "Next.js",
     "creative developer",
@@ -27,24 +29,24 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: siteUrl,
-    title: "PROJECT VICE // MAHARSHI.EXE — Maharshi Barot",
+    title: "Maharshi Barot — AI Solutions Developer & Full-Stack Engineer",
     description:
-      "AI Solutions Developer · Full-Stack Engineer. Enter Vice City and play through the missions.",
-    siteName: "PROJECT VICE",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "PROJECT VICE // MAHARSHI.EXE" }],
+      "Building intelligent products from idea to production. AI agents, full-stack apps, mobile, automation and computer vision — shipped end-to-end.",
+    siteName: "Maharshi Barot",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Maharshi Barot — AI Solutions Developer" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PROJECT VICE // MAHARSHI.EXE — Maharshi Barot",
+    title: "Maharshi Barot — AI Solutions Developer & Full-Stack Engineer",
     description:
-      "AI Solutions Developer · Full-Stack Engineer. Enter Vice City and play through the missions.",
+      "Building intelligent products from idea to production — shipped end-to-end.",
     images: ["/og.png"],
   },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0512",
+  themeColor: "#060608",
   width: "device-width",
   initialScale: 1,
 };
@@ -74,7 +76,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
       </head>

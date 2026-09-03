@@ -1,14 +1,10 @@
-import { Experience } from "@/experience/Experience";
+import Home from "@/home/Home";
 
 /**
- * MAHARSHI.OS — an interactive 3D portfolio.
- * A single WebGL world with an in-scene nav that flies between three scenes:
- * a floating laptop (home), a project monitor, and a contact pedestal.
+ * Maharshi Barot — an interactive "digital intelligence" portfolio.
+ * A scrolling experience: a reactive 3D core, kinetic identity, selected work,
+ * journey, an interactive skill ecosystem, and a clean contact close.
  */
-export default function Home() {
-  return (
-    <main id="main">
-      <Experience />
-    </main>
-  );
+export default function Page() {
+  return <Home />;
 }

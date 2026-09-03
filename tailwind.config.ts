@@ -18,8 +18,8 @@ const config: Config = {
         gold: "rgb(var(--gold-rgb) / <alpha-value>)",
         purple: "rgb(var(--purple-rgb) / <alpha-value>)",
         neon: "rgb(var(--green-rgb) / <alpha-value>)",
-        accent: "rgb(var(--pink-rgb) / <alpha-value>)",
-        "accent-2": "rgb(var(--cyan-rgb) / <alpha-value>)",
+        accent: "rgb(var(--accent-1-rgb) / <alpha-value>)",
+        "accent-2": "rgb(var(--accent-2-rgb) / <alpha-value>)",
         // Fixed values (no alpha modifier needed).
         "night-2": "var(--bg-2)",
         panel: "var(--panel)",
