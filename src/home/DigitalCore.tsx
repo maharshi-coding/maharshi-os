@@ -34,12 +34,12 @@ function Core({ energy }: { energy: number }) {
     }
     if (distort.current) {
       distort.current.distort = 0.28 + e * 0.22;
-      distort.current.emissiveIntensity = 0.35 + e * 0.9;
+      distort.current.emissiveIntensity = 0.52 + e * 0.7;
     }
     if (shell.current) {
       shell.current.rotation.y -= delta * 0.12;
       const m = shell.current.material as THREE.MeshBasicMaterial;
-      m.opacity = 0.12 + e * 0.16;
+      m.opacity = 0.34 + e * 0.2;
     }
   });
 

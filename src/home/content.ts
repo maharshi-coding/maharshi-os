@@ -63,6 +63,7 @@ export const heroNodes: HeroNode[] = [
 /** In-page nav destinations. */
 export const navItems = [
   { id: "work", label: "Work" },
+  { id: "opensource", label: "Open Source" },
   { id: "journey", label: "Experience" },
   { id: "skills", label: "Skills" },
   { id: "contact", label: "Contact" },

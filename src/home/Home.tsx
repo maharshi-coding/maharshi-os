@@ -5,9 +5,10 @@ import Background from "./Background";
 import CustomCursor from "./CustomCursor";
 import Nav from "./Nav";
 import SmoothScroll from "./SmoothScroll";
-import Companion from "./companion/Companion";
+import WorkspaceOverlay from "./workspace/WorkspaceOverlay";
 import Hero from "./sections/Hero";
 import Work from "./sections/Work";
+import OpenSource from "./sections/OpenSource";
 import Journey from "./sections/Journey";
 import Skills from "./sections/Skills";
 import Contact from "./sections/Contact";
@@ -25,14 +26,15 @@ export default function Home() {
       <div className="hx">
         <Background reduced={reduced} />
         <CustomCursor />
-        <Companion />
         <SmoothScroll reduced={reduced} />
         <motion.div className="hx-progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
         <Nav />
+        <WorkspaceOverlay />
 
         <main className="hx-main">
           <Hero reduced={reduced} />
           <Work />
+          <OpenSource />
           <Journey />
           <Skills />
           <Contact />
