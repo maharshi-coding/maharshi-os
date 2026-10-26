@@ -12,10 +12,10 @@ export interface CurrentProject {
 }
 
 export const currentProject: CurrentProject = {
-  name: "Open-source robotics · ROS 2",
+  name: "Upstream open-source fixes",
   description:
-    "Upstreaming reliability fixes to the ROS 2 stack — a merged Behavior-Tree cancellation race in Nav2, and an open lifetime fix in MoveIt 2.",
-  tech: ["C++", "ROS 2", "Nav2", "MoveIt 2"],
-  status: "In review",
-  url: "https://github.com/moveit/moveit2/pull/3850",
+    "Shipping fixes to major open-source projects — merged into Tesla's Vehicle Command SDK and ROS 2 Nav2, with open PRs to Meta, Google DeepMind, Waymo and Supabase.",
+  tech: ["Go", "C++", "Rust", "Python", "TypeScript"],
+  status: "Active",
+  url: "https://github.com/maharshi-coding",
 };

@@ -1,144 +1,94 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { person } from "@/data/resume";
-import { heroNodes, roleWords } from "../content";
-import { scrollToId } from "../SmoothScroll";
+import FadeIn from "../components/FadeIn";
+import Magnet from "../components/Magnet";
+import ContactButton from "../components/ContactButton";
+import { scrollToId } from "../scroll";
 
-const DigitalCore = dynamic(() => import("../DigitalCore"), { ssr: false });
+const WorkspaceScene = dynamic(() => import("./WorkspaceScene"), { ssr: false });
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-function Line({ text, outline, delay }: { text: string; outline?: boolean; delay: number }) {
-  return (
-    <span className={outline ? "is-outline" : undefined} style={{ display: "block" }}>
-      {text.split("").map((ch, i) => (
-        <span key={i} className="hx-charmask">
-          <span className="hx-char" style={{ animationDelay: `${delay + i * 0.035}s` }}>
-            {ch}
-          </span>
-        </span>
-      ))}
-    </span>
-  );
-}
-
-function RoleSwitcher({ reduced }: { reduced: boolean }) {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (reduced) return;
-    const t = setInterval(() => setI((v) => (v + 1) % roleWords.length), 2600);
-    return () => clearInterval(t);
-  }, [reduced]);
-
-  return (
-    <span className="hx-roles">
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
-          key={i}
-          className="hx-roles__item"
-          initial={{ y: "110%" }}
-          animate={{ y: "0%" }}
-          exit={{ y: "-110%" }}
-          transition={{ duration: 0.6, ease: EASE }}
-        >
-          {roleWords[i]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
+const NAV = [
+  { label: "About", id: "about" },
+  { label: "Work", id: "work" },
+  { label: "Open Source", id: "opensource" },
+  { label: "Contact", id: "contact" },
+];
 
 export default function Hero({ reduced }: { reduced: boolean }) {
-  const [active, setActive] = useState<string | null>(null);
-  const [use3D, setUse3D] = useState(false);
-  const energy = active ? 1 : 0;
-
-  useEffect(() => {
-    // Only run the WebGL core on capable desktops — mobile/touch stays light.
-    setUse3D(window.matchMedia("(min-width: 768px) and (pointer: fine)").matches);
-  }, []);
-
   return (
-    <header id="top" className="hx-hero">
-      {use3D && (
-        <div className="hx-hero__canvas" aria-hidden="true">
-          <DigitalCore energy={energy} />
-        </div>
-      )}
-
-      <div className="hx-container hx-hero__inner">
-        <motion.p
-          className="hx-eyebrow hx-hero__eyebrow"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, ease: EASE }}
+    <header
+      id="top"
+      className="relative flex min-h-screen flex-col px-6 md:px-10"
+      style={{ overflowX: "clip" }}
+    >
+      {/* Navbar */}
+      <FadeIn
+        as="nav"
+        delay={0}
+        y={-20}
+        className="flex items-center justify-between gap-6 pt-6 md:pt-8"
+      >
+        <button
+          type="button"
+          onClick={() => scrollToId("top")}
+          className="jk-link hidden shrink-0 text-sm font-semibold uppercase tracking-wider text-[#D7E2EA] sm:block md:text-lg"
         >
-          AI Solutions Developer · Full-Stack Engineer
-        </motion.p>
-
-        <h1 className="hx-hero__name">
-          <Line text="MAHARSHI" delay={0.15} />
-          <Line text="BAROT" outline delay={0.4} />
-        </h1>
-
-        <motion.div
-          className="hx-hero__sub"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-        >
-          <span className="hx-hero__build">I build</span>
-          <RoleSwitcher reduced={reduced} />
-        </motion.div>
-
-        <motion.p
-          className="hx-hero__tag"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.05 }}
-        >
-          {person.tagline} I turn ideas into intelligent products and ship them end-to-end —
-          from prompt to production.
-        </motion.p>
-
-        <div className="hx-hero__cta">
-          <button type="button" className="hx-btn hx-btn--primary" onClick={() => scrollToId("work")}>
-            View my work
-            <ArrowRight size={15} strokeWidth={2} />
-          </button>
-          <button type="button" className="hx-btn" onClick={() => scrollToId("contact")}>
-            Get in touch
-            <ArrowRight size={15} strokeWidth={2} />
-          </button>
-        </div>
-
-        <div className="hx-nodes" onMouseLeave={() => setActive(null)}>
-          {heroNodes.map((node) => (
-            <div
-              key={node.id}
-              className="hx-node"
-              data-active={active === node.id}
-              tabIndex={0}
-              onMouseEnter={() => setActive(node.id)}
-              onFocus={() => setActive(node.id)}
-              onBlur={() => setActive(null)}
+          Maharshi Barot
+        </button>
+        <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end sm:gap-7 md:gap-9">
+          {NAV.map((n) => (
+            <button
+              key={n.id}
+              type="button"
+              onClick={() => scrollToId(n.id)}
+              className="jk-link whitespace-nowrap text-xs font-medium uppercase tracking-wider text-[#D7E2EA] sm:text-sm md:text-lg lg:text-[1.4rem]"
             >
-              {node.label}
-              <div className="hx-node__pop" role="tooltip">
-                <h4>{node.blurb}</h4>
-                <ul>
-                  {node.tech.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+              {n.label}
+            </button>
           ))}
         </div>
+      </FadeIn>
+
+      {/* Center stage: name + magnetic workspace scene */}
+      <div className="relative flex flex-1 flex-col items-center justify-center py-6">
+        <FadeIn
+          as="h1"
+          delay={0.15}
+          y={40}
+          className="hero-heading w-full text-center font-black uppercase leading-[0.82] tracking-tight"
+          style={{ fontSize: "clamp(3.5rem, 13vw, 15rem)" }}
+        >
+          <span className="block">Maharshi</span>
+          <span className="block">Barot</span>
+        </FadeIn>
+
+        <FadeIn
+          delay={0.45}
+          y={30}
+          className="mt-6 w-full max-w-[640px] px-2 md:-mt-2"
+        >
+          <Magnet padding={120} strength={4} className="mx-auto w-full">
+            <WorkspaceScene reduced={reduced} />
+          </Magnet>
+        </FadeIn>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="flex items-end justify-between gap-6 pb-7 sm:pb-8 md:pb-10">
+        <FadeIn
+          as="p"
+          delay={0.35}
+          y={20}
+          className="max-w-[200px] font-light uppercase leading-snug tracking-wide text-[#D7E2EA] sm:max-w-[260px] md:max-w-[320px]"
+          style={{ fontSize: "clamp(0.75rem, 1.4vw, 1.4rem)" }}
+        >
+          AI Solutions Developer &amp; Full-Stack Engineer — building intelligent products from idea
+          to production.
+        </FadeIn>
+        <FadeIn delay={0.5} y={20} className="shrink-0">
+          <ContactButton />
+        </FadeIn>
       </div>
     </header>
   );

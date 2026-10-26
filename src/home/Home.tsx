@@ -1,12 +1,11 @@
 "use client";
 
-import { MotionConfig, motion, useReducedMotion, useScroll } from "framer-motion";
-import Background from "./Background";
-import CustomCursor from "./CustomCursor";
-import Nav from "./Nav";
-import SmoothScroll from "./SmoothScroll";
-import WorkspaceOverlay from "./workspace/WorkspaceOverlay";
+import { MotionConfig, useReducedMotion } from "framer-motion";
+import StickyNav from "./components/StickyNav";
 import Hero from "./sections/Hero";
+import Marquee from "./sections/Marquee";
+import About from "./sections/About";
+import Expertise from "./sections/Expertise";
 import Work from "./sections/Work";
 import OpenSource from "./sections/OpenSource";
 import Journey from "./sections/Journey";
@@ -14,25 +13,26 @@ import Skills from "./sections/Skills";
 import Contact from "./sections/Contact";
 
 /**
- * The redesigned homepage: a scrolling "digital intelligence" experience.
- * Reads reduced-motion once and threads it through the motion-heavy pieces.
+ * The homepage — a "Creator"-styled scrolling tour (Jack-inspired: Kanit,
+ * #0C0C0C, steel-gradient headings, magnetic hero, scroll-driven marquee,
+ * char-reveal About, white Expertise panel, sticky-stacking project cards),
+ * populated end-to-end with Maharshi's real content.
+ *
+ * Scrolling and the cursor are native; motion honours prefers-reduced-motion
+ * via <MotionConfig reducedMotion="user"> and per-component guards.
  */
 export default function Home() {
   const reduced = !!useReducedMotion();
-  const { scrollYProgress } = useScroll();
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="hx">
-        <Background reduced={reduced} />
-        <CustomCursor />
-        <SmoothScroll reduced={reduced} />
-        <motion.div className="hx-progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
-        <Nav />
-        <WorkspaceOverlay />
-
+        <StickyNav />
         <main className="hx-main">
           <Hero reduced={reduced} />
+          <Marquee />
+          <About />
+          <Expertise />
           <Work />
           <OpenSource />
           <Journey />

@@ -106,6 +106,7 @@ export interface Project {
   architecture: { from: string; to: string }[];
   nodes: string[];
   github: string;
+  repoPrivate?: boolean; // true when the repo is private — link the profile, not a 404
   live?: string; // public, click-to-test deployment (only where one actually exists)
   liveLabel?: string; // button text for `live` (defaults to "Live Demo"; e.g. "Walkthrough")
 }
@@ -157,6 +158,7 @@ export const projects: Project[] = [
       "Mapbox routing",
     ],
     github: "https://github.com/maharshi-coding/ride-share",
+    repoPrivate: true,
   },
   {
     id: "face-attendance",

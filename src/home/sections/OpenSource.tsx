@@ -6,6 +6,7 @@ import { ArrowUpRight, CircleDot, Github, GitMerge, GitPullRequest } from "lucid
 import {
   openSourceContributions,
   contributionStats,
+  contributionCompanies,
   type Contribution,
   type ContributionStatus,
 } from "@/data/openSource";
@@ -73,6 +74,7 @@ function ContributionCard({ c }: { c: Contribution }) {
             loading="lazy"
           />
           <div className="hx-os__id">
+            <p className="hx-os__company">{c.company}</p>
             <p className="hx-os__project">{c.project}</p>
             <p className="hx-os__repo">
               {c.org}/{c.repo}
@@ -165,15 +167,20 @@ export default function OpenSource() {
       <div className="hx-container">
         <header className="hx-os__head">
           <p className="hx-eyebrow">Open Source</p>
-          <h2 className="hx-h2">Contributions to the tools I build on.</h2>
+          <h2 className="hx-h2">Contributions to the tools the industry builds on.</h2>
           <p className="hx-lead">
-            Real fixes upstreamed to the ROS 2 ecosystem — concurrency and lifetime bugs in the
-            navigation and manipulation stacks used across robotics.{" "}
-            <strong>
-              {contributionStats.merged} merged
-            </strong>{" "}
-            across {contributionStats.orgs} projects.
+            Real fixes upstreamed to major open-source projects — memory-safety, concurrency,
+            type-inference and platform bugs. <strong>{contributionStats.merged} merged</strong>{" "}
+            (incl. Tesla &amp; ROS 2) and {contributionStats.open} open across{" "}
+            {contributionStats.companies} organizations.
           </p>
+          <ul className="hx-os__orgs" aria-label="Organizations contributed to">
+            {contributionCompanies.map((name) => (
+              <li key={name} className="hx-os__org">
+                {name}
+              </li>
+            ))}
+          </ul>
         </header>
 
         <div className="hx-os__filters" role="tablist" aria-label="Filter contributions">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { navItems } from "./content";
-import { scrollToId } from "./SmoothScroll";
+import { scrollToId } from "./scroll";
 
 /**
  * Minimal floating nav — transparent over the hero, condensing into a compact
